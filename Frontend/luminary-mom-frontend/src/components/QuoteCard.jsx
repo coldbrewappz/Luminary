@@ -1,13 +1,18 @@
-import { useState } from 'react'
+import { useLoves } from '../context/LovesContext'
 
-function QuoteCard({ quote, author, tag, theme }) {
-  const [saved, setSaved] = useState(false)
+function QuoteCard({ id, quote, author, tag, theme }) {
+  const { toggleLove, isLoved } = useLoves()
+  const loved = isLoved(id)
 
   const bgColor = theme === 'lavender' ? 'bg-lavender' : 'bg-blush'
 
+  function handleToggle() {
+    toggleLove({ id, text: quote, author, category: tag })
+  }
+
   return (
     <div className={`${bgColor} rounded-sm p-10 flex flex-col gap-4 relative cursor-pointer hover:-translate-y-0.5 transition-transform duration-200`}>
-      
+
       {/* Opening quote mark */}
       <span className="font-serif text-6xl leading-none text-text-light opacity-40 absolute top-4 left-6">
         "
@@ -28,22 +33,22 @@ function QuoteCard({ quote, author, tag, theme }) {
         </span>
       </div>
 
-      {/* Save button */}
+      {/* Heart button */}
       <button
-        onClick={() => setSaved(!saved)}
-        className="flex items-center gap-2 text-xs uppercase tracking-wider text-text-light hover:text-text-dark transition-colors bg-transparent border-none cursor-pointer p-0 w-fit"
+        onClick={handleToggle}
+        className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 w-fit ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}
       >
         <svg
           viewBox="0 0 24 24"
           width="15"
           height="15"
           stroke="currentColor"
-          fill={saved ? 'currentColor' : 'none'}
+          fill={loved ? 'currentColor' : 'none'}
           strokeWidth="1.5"
         >
-          <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
         </svg>
-        {saved ? 'Saved' : 'Save'}
+        {loved ? 'Loved' : 'Love'}
       </button>
 
     </div>
