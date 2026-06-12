@@ -5,12 +5,14 @@ import QuoteFeed from '../components/QuoteFeed'
 
 function QuotesPage() {
   const [activeCategory, setActiveCategory] = useState(null)
+  const [showAllQuotes, setShowAllQuotes] = useState(false)
 
   function handleTileClick(categoryId) {
     if (activeCategory === categoryId) {
       setActiveCategory(null)
     } else {
       setActiveCategory(categoryId)
+      setShowAllQuotes(false)
     }
   }
 
@@ -19,6 +21,14 @@ function QuotesPage() {
     : quotes
 
   const activeCategoryData = categories.find(c => c.id === activeCategory)
+
+  // Which tiles are visible: just the selected one, or all of them
+  const visibleCategories = activeCategory
+    ? categories.filter(c => c.id === activeCategory)
+    : categories
+
+  // The feed shows if a category is picked OR the mom asked to see all
+  const showFeed = activeCategory !== null || showAllQuotes
 
   return (
     <div>
@@ -32,17 +42,19 @@ function QuotesPage() {
           Quotes
         </h1>
         <p className="text-sm text-text-mid tracking-wide">
-          Choose a category or scroll through all quotes below.
+          {activeCategory
+            ? 'Tap the tile again to see all categories.'
+            : 'Choose a category that speaks to you.'}
         </p>
       </section>
 
       {/* Category Tiles */}
       <div className="max-w-2xl mx-auto px-6 py-12">
         <p className="text-xs uppercase tracking-widest text-text-light text-center mb-6">
-          Browse by category
+          {activeCategory ? 'Your category' : 'Browse by category'}
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {categories.map(cat => {
+        <div className={activeCategory ? 'max-w-sm mx-auto' : 'grid grid-cols-2 gap-3'}>
+          {visibleCategories.map(cat => {
             const count = quotes.filter(q => q.category === cat.id).length
             return (
               <CategoryTile
@@ -56,13 +68,41 @@ function QuotesPage() {
         </div>
       </div>
 
+      {/* View all quotes button — only when nothing is selected */}
+      {!showFeed && (
+        <div className="text-center pb-16">
+          <button
+            onClick={() => setShowAllQuotes(true)}
+            className="font-serif text-lg italic text-text-mid border-b border-linen-dark pb-0.5 hover:text-text-dark hover:border-text-mid transition-colors bg-transparent cursor-pointer"
+          >
+            Or wander through every quote →
+          </button>
+        </div>
+      )}
+
       {/* Quote Feed */}
-      <div className="max-w-2xl mx-auto px-6">
-        <p className="text-xs uppercase tracking-widest text-text-light text-center mb-10 pt-8 border-t border-linen-dark">
-          {activeCategoryData ? `${activeCategoryData.emoji} ${activeCategoryData.name}` : 'All quotes'}
-        </p>
-      </div>
-      <QuoteFeed quotes={filteredQuotes} />
+      {showFeed && (
+        <>
+          <div className="max-w-2xl mx-auto px-6">
+            <div className="flex items-center justify-between pt-8 mb-10 border-t border-linen-dark">
+              <p className="text-xs uppercase tracking-widest text-text-light">
+                {activeCategoryData
+                  ? `${activeCategoryData.emoji} ${activeCategoryData.name}`
+                  : 'All quotes'}
+              </p>
+              {showAllQuotes && !activeCategory && (
+                <button
+                  onClick={() => setShowAllQuotes(false)}
+                  className="text-xs uppercase tracking-widest text-text-light hover:text-text-dark transition-colors bg-transparent border-none cursor-pointer"
+                >
+                  Hide ×
+                </button>
+              )}
+            </div>
+          </div>
+          <QuoteFeed quotes={filteredQuotes} />
+        </>
+      )}
 
     </div>
   )
