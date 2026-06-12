@@ -5,7 +5,7 @@ function CategoryTile({ category, isActive, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`${bgColor} ${borderColor} border-2 rounded-sm p-8 flex flex-col gap-1 cursor-pointer hover:-translate-y-0.5 transition-transform duration-200`}
+      className={`${bgColor} ${borderColor} border-2 rounded-sm p-5 sm:p-8 flex flex-col gap-1 cursor-pointer hover:-translate-y-0.5 transition-transform duration-200`}
     >
       {/* Emoji */}
       <span className="text-2xl mb-1">
@@ -13,7 +13,7 @@ function CategoryTile({ category, isActive, onClick }) {
       </span>
 
       {/* Category name */}
-      <span className="font-serif text-2xl italic font-light text-text-dark leading-tight">
+      <span className="font-serif text-lg sm:text-2xl italic font-light text-text-dark leading-tight break-words">
         {category.name}
       </span>
 
