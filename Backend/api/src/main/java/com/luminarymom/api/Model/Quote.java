@@ -1,13 +1,7 @@
 package com.luminarymom.api.Model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "quotes")
 public class Quote {
@@ -24,5 +18,26 @@ public class Quote {
 
     @Column(nullable = false)
     private String category;
+
+    public Quote() {}
+
+    public Quote(Long id, String text, String author, String category) {
+        this.id = id;
+        this.text = text;
+        this.author = author;
+        this.category = category;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+
+    public String getAuthor() { return author; }
+    public void setAuthor(String author) { this.author = author; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
 }
