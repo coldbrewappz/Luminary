@@ -1,13 +1,43 @@
-import { useLoves } from '../context/LovesContext.jsx'
-import { getDailyQuote } from '../data/quotes'
+import { useState, useEffect } from 'react'
+import { useLoves } from '../context/LovesContext'
+import API_BASE_URL from '../config/api'
 
 function DailyQuote() {
   const { toggleLove, isLoved } = useLoves()
-  const quote = getDailyQuote()
+  const [quote, setQuote] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/quotes/daily`)
+      .then(res => res.json())
+      .then(data => {
+        setQuote(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Error fetching daily quote:', err)
+        setError(err)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) return (
+    <div className="bg-lavender rounded-sm p-10 flex items-center justify-center min-h-48">
+      <p className="font-serif italic text-text-light text-xl">Finding today's light...</p>
+    </div>
+  )
+
+  if (error || !quote) return (
+    <div className="bg-lavender rounded-sm p-10 flex items-center justify-center min-h-48">
+      <p className="font-serif italic text-text-light text-xl">Something went wrong. Please try again.</p>
+    </div>
+  )
+
   const loved = isLoved(quote.id)
 
   function handleToggle() {
-    toggleLove(quote)
+    toggleLove({ id: quote.id, text: quote.text, author: quote.author, category: quote.category })
   }
 
   return (
@@ -38,17 +68,10 @@ function DailyQuote() {
         onClick={handleToggle}
         className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}
       >
-        <svg
-          viewBox="0 0 24 24"
-          width="15"
-          height="15"
-          stroke="currentColor"
-          fill={loved ? 'currentColor' : 'none'}
-          strokeWidth="1.5"
-        >
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill={loved ? 'currentColor' : 'none'} strokeWidth="1.5">
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
         </svg>
-        {loved ? 'Loved' : 'Love this'}
+        {loved ? 'Loved' : 'Love'}
       </button>
 
     </div>

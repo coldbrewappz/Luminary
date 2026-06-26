@@ -100,7 +100,7 @@ function QuotesPage() {
               )}
             </div>
           </div>
-          <QuoteFeed quotes={filteredQuotes} />
+          <QuoteFeed category={activeCategory} />
         </>
       )}
 
