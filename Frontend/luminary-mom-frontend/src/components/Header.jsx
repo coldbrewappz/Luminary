@@ -1,12 +1,20 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLoves } from '../context/LovesContext'
+import { useAuth } from '../context/AuthContext'
 import LovesPanel from './LovesPanel'
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
   const { lovedQuotes } = useLoves()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    navigate('/')
+  }
 
   return (
     <>
@@ -30,6 +38,19 @@ function Header() {
             <Link to="/about" className="text-xs uppercase tracking-widest text-text-mid hover:text-text-dark transition-colors">
               About
             </Link>
+            {/* Auth link */}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="text-xs uppercase tracking-widest text-text-mid hover:text-text-dark transition-colors bg-transparent border-none cursor-pointer p-0"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link to="/login" className="text-xs uppercase tracking-widest text-text-mid hover:text-text-dark transition-colors">
+                Sign in
+              </Link>
+            )}
           </nav>
 
           {/* Heart icon */}
@@ -71,27 +92,27 @@ function Header() {
         {/* Dropdown Menu */}
         {menuOpen && (
           <div className="absolute top-16 right-0 w-52 bg-linen border-l border-b border-linen-dark px-8 py-6 flex flex-col gap-4 z-50">
-            <Link
-              to="/"
-              onClick={() => setMenuOpen(false)}
-              className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors"
-            >
+            <Link to="/" onClick={() => setMenuOpen(false)} className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors">
               Home
             </Link>
-            <Link
-              to="/quotes"
-              onClick={() => setMenuOpen(false)}
-              className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors"
-            >
+            <Link to="/quotes" onClick={() => setMenuOpen(false)} className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors">
               Quotes
             </Link>
-            <Link
-              to="/about"
-              onClick={() => setMenuOpen(false)}
-              className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors"
-            >
+            <Link to="/about" onClick={() => setMenuOpen(false)} className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors">
               About
             </Link>
+            {user ? (
+              <button
+                onClick={() => { handleLogout(); setMenuOpen(false); }}
+                className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors">
+                Sign in
+              </Link>
+            )}
             <button
               onClick={() => { setPanelOpen(true); setMenuOpen(false); }}
               className="flex items-center gap-2 font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
@@ -106,7 +127,7 @@ function Header() {
 
       </header>
 
-      {/* The panel itself */}
+      {/* Loves Panel */}
       <LovesPanel isOpen={panelOpen} onClose={() => setPanelOpen(false)} />
     </>
   )
