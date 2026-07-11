@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useLoves } from '../context/LovesContext'
 import API_BASE_URL from '../config/api'
+import useNotification from '../hooks/useNotification'
 
 function DailyQuote() {
   const { toggleLove, isLoved } = useLoves()
+  const { notify } = useNotification()
   const [quote, setQuote] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -36,8 +38,21 @@ function DailyQuote() {
 
   const loved = isLoved(quote.id)
 
-  function handleToggle() {
-    toggleLove({ id: quote.id, text: quote.text, author: quote.author, category: quote.category })
+  async function handleToggle() {
+    const result = await toggleLove({ id: quote.id, text: quote.text, author: quote.author, category: quote.category })
+    const notifications = {
+      auth: {
+        type: 'info',
+        title: 'Save a little light for later',
+        message: 'Create a free account to build your personal collection of encouragement.',
+        action: { label: 'Sign in', href: '/login' },
+      },
+      saved: { type: 'success', title: 'Quote saved', message: 'Added to your collection.' },
+      removed: { type: 'removed', title: 'Quote removed', message: 'Removed from your collection.' },
+      cap: { type: 'warning', title: 'Your collection is full', message: 'Remove a quote to make room for something new.' },
+      error: { type: 'error', title: 'We could not save that quote', message: 'Please try again in a moment.' },
+    }
+    notify(notifications[result.status])
   }
 
   return (

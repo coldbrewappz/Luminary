@@ -3,17 +3,32 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLoves } from '../context/LovesContext'
 import { useAuth } from '../context/AuthContext'
 import LovesPanel from './LovesPanel'
+import useNotification from '../hooks/useNotification'
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
   const { lovedQuotes } = useLoves()
   const { user, logout } = useAuth()
+  const { notify } = useNotification()
   const navigate = useNavigate()
 
   function handleLogout() {
     logout()
     navigate('/')
+  }
+
+  function openCollection() {
+    if (!user) {
+      notify({
+        type: 'info',
+        title: 'Your collection is waiting',
+        message: 'Sign in or create a free account to save and revisit the quotes you love.',
+        action: { label: 'Sign in', href: '/login' },
+      })
+      return
+    }
+    setPanelOpen(true)
   }
 
   return (
@@ -55,7 +70,7 @@ function Header() {
 
           {/* Heart icon */}
           <button
-            onClick={() => setPanelOpen(true)}
+            onClick={openCollection}
             className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-1 rounded-full hover:bg-pink-100 transition-colors"
             aria-label="Quotes you love"
           >
@@ -114,7 +129,7 @@ function Header() {
               </Link>
             )}
             <button
-              onClick={() => { setPanelOpen(true); setMenuOpen(false); }}
+              onClick={() => { openCollection(); setMenuOpen(false); }}
               className="flex items-center gap-2 font-serif text-2xl italic text-text-dark hover:text-text-mid transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
             >
               <svg viewBox="0 0 24 24" width="18" height="18" stroke="#D4A0A0" fill="none" strokeWidth="1.5">

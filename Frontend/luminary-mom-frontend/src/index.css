@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-slide-in {
+  animation: notification-slide-in 220ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-slide-in {
+    animation: none;
+  }
+}

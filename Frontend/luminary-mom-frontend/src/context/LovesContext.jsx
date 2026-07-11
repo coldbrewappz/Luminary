@@ -48,22 +48,25 @@ export function LovesProvider({ children }) {
   }
 
   async function toggleLove(quote) {
-    if (!user || !token) return false
+    if (!user || !token) return { status: 'auth' }
 
     const isLoved = lovedQuotes.some(q => q.quote?.id === quote.id)
 
     if (isLoved) {
       try {
-        await fetch(`${API_BASE_URL}/api/loves/${quote.id}`, {
+        const res = await fetch(`${API_BASE_URL}/api/loves/${quote.id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         })
+        if (!res.ok) throw new Error('Unable to remove quote')
         setLovedQuotes(prev => prev.filter(q => q.quote?.id !== quote.id))
+        return { status: 'removed' }
       } catch (err) {
         console.error('Error removing love:', err)
+        return { status: 'error' }
       }
     } else {
-      if (lovedQuotes.length + personalQuotes.length >= QUOTE_CAP) return false
+      if (lovedQuotes.length + personalQuotes.length >= QUOTE_CAP) return { status: 'cap' }
       try {
         const res = await fetch(`${API_BASE_URL}/api/loves`, {
           method: 'POST',
@@ -73,13 +76,15 @@ export function LovesProvider({ children }) {
           },
           body: JSON.stringify({ quoteId: quote.id })
         })
+        if (!res.ok) throw new Error('Unable to save quote')
         const saved = await res.json()
         setLovedQuotes(prev => [...prev, saved])
+        return { status: 'saved' }
       } catch (err) {
         console.error('Error saving love:', err)
+        return { status: 'error' }
       }
     }
-    return true
   }
 
   async function addOwnQuote(text) {
