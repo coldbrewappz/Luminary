@@ -1,13 +1,21 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLoves } from '../context/LovesContext'
 
 function QuoteCard({ id, quote, author, tag, theme }) {
-  const { toggleLove, isLoved } = useLoves()
+  const { toggleLove, isLoved, isLoggedIn } = useLoves()
+  const [showNudge, setShowNudge] = useState(false)
   const loved = isLoved(id)
 
   const bgColor = theme === 'lavender' ? 'bg-lavender' : 'bg-blush'
 
-  function handleToggle() {
-    toggleLove({ id, text: quote, author, category: tag })
+  async function handleToggle() {
+    if (!isLoggedIn) {
+      setShowNudge(true)
+      setTimeout(() => setShowNudge(false), 4000)
+      return
+    }
+    await toggleLove({ id, text: quote, author, category: tag })
   }
 
   return (
@@ -38,18 +46,23 @@ function QuoteCard({ id, quote, author, tag, theme }) {
         onClick={handleToggle}
         className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 w-fit ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}
       >
-        <svg
-          viewBox="0 0 24 24"
-          width="15"
-          height="15"
-          stroke="currentColor"
-          fill={loved ? 'currentColor' : 'none'}
-          strokeWidth="1.5"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill={loved ? 'currentColor' : 'none'} strokeWidth="1.5">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
         </svg>
         {loved ? 'Loved' : 'Love'}
       </button>
+
+      {/* Sign in nudge */}
+      {showNudge && (
+        <div className="flex items-center gap-2 animate-pulse">
+          <p className="text-xs italic text-text-mid">
+            Sign in to save this quote 💛{' '}
+            <Link to="/login" className="underline hover:text-text-dark transition-colors">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      )}
 
     </div>
   )
