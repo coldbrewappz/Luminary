@@ -2,19 +2,69 @@ import { useState } from 'react'
 import { useLoves } from '../context/LovesContext'
 
 function LovesPanel({ isOpen, onClose }) {
-  const { lovedQuotes, addOwnQuote, removeQuote, QUOTE_CAP } = useLoves()
+  const { lovedQuotes, personalQuotes, addOwnQuote, removeQuote, QUOTE_CAP, isLoggedIn } = useLoves()
   const [ownText, setOwnText] = useState('')
 
-  const atCap = lovedQuotes.length >= QUOTE_CAP
+  const totalCount = lovedQuotes.length + personalQuotes.length
+  const atCap = totalCount >= QUOTE_CAP
 
-  function handleAddOwn() {
+  const collection = [
+    ...lovedQuotes.map(q => ({
+      id: q.quote?.id,
+      text: q.quote?.text,
+      author: q.quote?.author,
+      type: 'saved',
+    })),
+    ...personalQuotes.map(q => ({
+      id: q.id,
+      text: q.text,
+      author: null,
+      type: 'own',
+    })),
+  ]
+
+  async function handleAddOwn() {
     const text = ownText.trim()
     if (!text) return
-    const success = addOwnQuote(text)
+    const success = await addOwnQuote(text)
     if (success) setOwnText('')
   }
 
   if (!isOpen) return null
+
+  if (!isLoggedIn) {
+    return (
+      <div className="fixed inset-0 bg-linen z-50 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-6 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="font-serif text-4xl italic font-light text-text-dark">
+              Quotes You Love
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-xs uppercase tracking-widest text-text-mid bg-transparent border-none cursor-pointer hover:text-text-dark transition-colors"
+            >
+              Close ×
+            </button>
+          </div>
+          <div className="bg-blush rounded-sm px-7 py-10 text-center">
+            <p className="font-serif text-xl italic text-text-dark mb-3">
+              Sign in to save your quotes 💛
+            </p>
+            <p className="text-sm text-text-mid leading-relaxed mb-6">
+              Create a free account to build your own collection of encouragement.
+            </p>
+            <a
+              href="/login"
+              className="inline-block bg-pink-100 text-pink-400 text-xs uppercase tracking-widest px-6 py-2.5 rounded-sm hover:bg-pink-200 transition-colors"
+            >
+              Sign in
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed inset-0 bg-linen z-50 overflow-y-auto">
@@ -43,12 +93,12 @@ function LovesPanel({ isOpen, onClose }) {
         {/* Cap indicator */}
         <div className="flex items-center justify-between bg-pink-100 rounded-sm px-4 py-3 mb-6">
           <span className="text-xs text-text-mid tracking-wide">
-            {lovedQuotes.length} of {QUOTE_CAP} saved
+            {totalCount} of {QUOTE_CAP} saved
           </span>
           <div className="w-32 h-1 bg-linen-dark rounded-full overflow-hidden">
             <div
               className="h-full bg-pink-300 rounded-full transition-all duration-300"
-              style={{ width: `${(lovedQuotes.length / QUOTE_CAP) * 100}%` }}
+              style={{ width: `${(totalCount / QUOTE_CAP) * 100}%` }}
             ></div>
           </div>
         </div>
@@ -62,8 +112,8 @@ function LovesPanel({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* Loved quotes list */}
-        {lovedQuotes.length === 0 ? (
+        {/* Collection list */}
+        {collection.length === 0 ? (
           <div className="text-center py-12">
             <p className="font-serif text-xl italic text-text-light mb-2">
               No quotes loved yet.
@@ -74,22 +124,24 @@ function LovesPanel({ isOpen, onClose }) {
           </div>
         ) : (
           <div className="flex flex-col gap-4 mb-10">
-            {lovedQuotes.map(q => (
-              <div key={q.id} className="bg-blush rounded-sm px-7 py-6 flex justify-between items-start gap-4">
+            {collection.map(q => (
+              <div key={`${q.type}-${q.id}`} className="bg-blush rounded-sm px-7 py-6 flex justify-between items-start gap-4">
                 <div>
                   <p className="font-serif text-lg italic text-text-dark leading-relaxed mb-1">
                     "{q.text}"
                   </p>
-                  <span className="text-xs uppercase tracking-widest text-text-light">
-                    — {q.author}
-                  </span>
+                  {q.author && (
+                    <span className="text-xs uppercase tracking-widest text-text-light">
+                      — {q.author}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
                   <span className="text-xs uppercase tracking-wider bg-pink-100 text-pink-400 px-2 py-0.5 rounded-full">
                     {q.type === 'own' ? 'My words' : 'Quote'}
                   </span>
                   <button
-                    onClick={() => removeQuote(q.id)}
+                    onClick={() => removeQuote(q.id, q.type)}
                     className="text-text-light hover:text-pink-300 bg-transparent border-none cursor-pointer transition-colors"
                     title="Remove"
                   >
