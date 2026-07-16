@@ -18,7 +18,7 @@ function LoginPage() {
       await login(email, password)
       navigate('/')
     } catch (err) {
-      setError('Invalid email or password. Please try again.')
+      setError(err.message || 'Invalid email or password. Please try again.')
     } finally {
       setLoading(false)
     }

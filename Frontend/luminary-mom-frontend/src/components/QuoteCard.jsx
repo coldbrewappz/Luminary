@@ -1,14 +1,23 @@
+import { useState } from 'react'
 import { useLoves } from '../context/LovesContext'
 import useNotification from '../hooks/useNotification'
 
 function QuoteCard({ id, quote, author, tag, theme }) {
   const { toggleLove, isLoved } = useLoves()
   const { notify } = useNotification()
+  const [pending, setPending] = useState(false)
   const loved = isLoved(id)
   const bgColor = theme === 'lavender' ? 'bg-lavender' : 'bg-blush'
 
   async function handleToggle() {
-    const result = await toggleLove({ id, text: quote, author, category: tag })
+    if (pending) return
+    setPending(true)
+    let result
+    try {
+      result = await toggleLove({ id, text: quote, author, category: tag })
+    } finally {
+      setPending(false)
+    }
     const notifications = {
       auth: {
         type: 'info',
@@ -32,7 +41,7 @@ function QuoteCard({ id, quote, author, tag, theme }) {
         <span className="text-xs uppercase tracking-widest text-text-mid">— {author}</span>
         <span className="text-xs uppercase tracking-wider text-text-light bg-white bg-opacity-40 px-3 py-1 rounded-full">{tag}</span>
       </div>
-      <button onClick={handleToggle} className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 w-fit ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}>
+      <button onClick={handleToggle} disabled={pending} className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 w-fit disabled:opacity-50 disabled:cursor-not-allowed ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}>
         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill={loved ? 'currentColor' : 'none'} strokeWidth="1.5">
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
         </svg>

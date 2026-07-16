@@ -9,6 +9,7 @@ function DailyQuote() {
   const [quote, setQuote] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [pending, setPending] = useState(false)
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/quotes/daily`)
@@ -39,7 +40,14 @@ function DailyQuote() {
   const loved = isLoved(quote.id)
 
   async function handleToggle() {
-    const result = await toggleLove({ id: quote.id, text: quote.text, author: quote.author, category: quote.category })
+    if (pending) return
+    setPending(true)
+    let result
+    try {
+      result = await toggleLove({ id: quote.id, text: quote.text, author: quote.author, category: quote.category })
+    } finally {
+      setPending(false)
+    }
     const notifications = {
       auth: {
         type: 'info',
@@ -81,7 +89,8 @@ function DailyQuote() {
       {/* Heart button */}
       <button
         onClick={handleToggle}
-        className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}
+        disabled={pending}
+        className={`flex items-center gap-2 text-xs uppercase tracking-wider transition-colors bg-transparent border-none cursor-pointer p-0 disabled:opacity-50 disabled:cursor-not-allowed ${loved ? 'text-pink-300' : 'text-text-light hover:text-pink-300'}`}
       >
         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill={loved ? 'currentColor' : 'none'} strokeWidth="1.5">
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>

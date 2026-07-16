@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { useLoves } from '../context/LovesContext'
 
 function LovesPanel({ isOpen, onClose }) {
-  const { lovedQuotes, personalQuotes, addOwnQuote, removeQuote, QUOTE_CAP, isLoggedIn } = useLoves()
+  const {
+    lovedQuotes, personalQuotes, addOwnQuote, removeQuote, QUOTE_CAP, isLoggedIn,
+    quotesLoading, quotesError, refetchCollection,
+  } = useLoves()
   const [ownText, setOwnText] = useState('')
+  const [adding, setAdding] = useState(false)
 
   const totalCount = lovedQuotes.length + personalQuotes.length
   const atCap = totalCount >= QUOTE_CAP
@@ -25,9 +29,14 @@ function LovesPanel({ isOpen, onClose }) {
 
   async function handleAddOwn() {
     const text = ownText.trim()
-    if (!text) return
-    const success = await addOwnQuote(text)
-    if (success) setOwnText('')
+    if (!text || adding) return
+    setAdding(true)
+    try {
+      const success = await addOwnQuote(text)
+      if (success) setOwnText('')
+    } finally {
+      setAdding(false)
+    }
   }
 
   if (!isOpen) return null
@@ -112,8 +121,27 @@ function LovesPanel({ isOpen, onClose }) {
           </div>
         )}
 
+        {/* Fetch error */}
+        {quotesError && (
+          <div className="bg-blush rounded-sm px-5 py-4 mb-6 flex items-center justify-between gap-4">
+            <p className="text-sm italic text-text-mid leading-relaxed">{quotesError}</p>
+            <button
+              onClick={refetchCollection}
+              className="text-xs uppercase tracking-widest text-text-dark border-b border-text-mid hover:border-text-dark bg-transparent border-t-0 border-l-0 border-r-0 cursor-pointer transition-colors flex-shrink-0"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Collection list */}
-        {collection.length === 0 ? (
+        {quotesLoading ? (
+          <div className="text-center py-12">
+            <p className="font-serif text-xl italic text-text-light">
+              Gathering your collection…
+            </p>
+          </div>
+        ) : collection.length === 0 ? (
           <div className="text-center py-12">
             <p className="font-serif text-xl italic text-text-light mb-2">
               No quotes loved yet.
@@ -171,10 +199,10 @@ function LovesPanel({ isOpen, onClose }) {
           <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
             <button
               onClick={handleAddOwn}
-              disabled={atCap}
+              disabled={atCap || adding}
               className="bg-pink-100 text-pink-400 text-xs uppercase tracking-widest px-6 py-2.5 rounded-sm border-none cursor-pointer hover:bg-pink-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Add to my collection
+              {adding ? 'Adding…' : 'Add to my collection'}
             </button>
             <span className="text-xs text-text-light">
               {ownText.length} / 300

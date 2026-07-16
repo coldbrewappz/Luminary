@@ -10,28 +10,42 @@ export function LovesProvider({ children }) {
   const { user, token } = useAuth()
   const [lovedQuotes, setLovedQuotes] = useState([])
   const [personalQuotes, setPersonalQuotes] = useState([])
+  const [quotesLoading, setQuotesLoading] = useState(false)
+  const [quotesError, setQuotesError] = useState(null)
 
   // Fetch loves from API when user logs in
   useEffect(() => {
     if (user && token) {
-      fetchLoves()
-      fetchPersonalQuotes()
+      loadCollection()
     } else {
       // Clear everything on logout
       setLovedQuotes([])
       setPersonalQuotes([])
+      setQuotesError(null)
     }
   }, [user, token])
+
+  async function loadCollection() {
+    setQuotesLoading(true)
+    setQuotesError(null)
+    try {
+      await Promise.all([fetchLoves(), fetchPersonalQuotes()])
+    } finally {
+      setQuotesLoading(false)
+    }
+  }
 
   async function fetchLoves() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/loves`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (!res.ok) throw new Error('Unable to load your saved quotes.')
       const data = await res.json()
       setLovedQuotes(data)
     } catch (err) {
       console.error('Error fetching loves:', err)
+      setQuotesError('We had trouble loading your collection. Please refresh to try again.')
     }
   }
 
@@ -40,10 +54,12 @@ export function LovesProvider({ children }) {
       const res = await fetch(`${API_BASE_URL}/api/personal`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (!res.ok) throw new Error('Unable to load your personal quotes.')
       const data = await res.json()
       setPersonalQuotes(data)
     } catch (err) {
       console.error('Error fetching personal quotes:', err)
+      setQuotesError('We had trouble loading your collection. Please refresh to try again.')
     }
   }
 
@@ -148,7 +164,10 @@ export function LovesProvider({ children }) {
       removeQuote,
       isLoved,
       QUOTE_CAP,
-      isLoggedIn: !!user
+      isLoggedIn: !!user,
+      quotesLoading,
+      quotesError,
+      refetchCollection: loadCollection
     }}>
       {children}
     </LovesContext.Provider>

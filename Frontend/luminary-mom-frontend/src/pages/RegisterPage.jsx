@@ -32,7 +32,7 @@ function RegisterPage() {
       await register(email, password)
       navigate('/')
     } catch (err) {
-      setError('An account with this email already exists.')
+      setError(err.message || 'Unable to create your account. Please try again.')
     } finally {
       setLoading(false)
     }
