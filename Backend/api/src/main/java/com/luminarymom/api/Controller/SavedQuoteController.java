@@ -37,6 +37,11 @@ public class SavedQuoteController {
         try {
             String email = authentication.getName();
             Long quoteId = body.get("quoteId");
+            if (quoteId == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("quoteId is required.");
+            }
             SavedQuote saved = savedQuoteService.saveQuote(email, quoteId);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (RuntimeException e) {

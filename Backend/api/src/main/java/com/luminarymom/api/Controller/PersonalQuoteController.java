@@ -41,6 +41,11 @@ public class PersonalQuoteController {
                         .status(HttpStatus.BAD_REQUEST)
                         .body("Text cannot be empty.");
             }
+            if (text.trim().length() > 300) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Text cannot be longer than 300 characters.");
+            }
             PersonalQuote saved = personalQuoteService.addPersonalQuote(email, text.trim());
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (RuntimeException e) {

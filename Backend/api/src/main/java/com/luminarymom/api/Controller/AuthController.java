@@ -25,41 +25,62 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    private static final java.util.regex.Pattern EMAIL_PATTERN =
+            java.util.regex.Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+
     // POST /api/auth/register
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
-        // 1. Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        // 1. Validate input
+        String email = request.getEmail() == null ? null : request.getEmail().trim();
+        String password = request.getPassword();
+
+        if (email == null || email.isEmpty() || !EMAIL_PATTERN.matcher(email).matches()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please enter a valid email address.");
+        }
+        if (password == null || password.length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 8 characters.");
+        }
+
+        // 2. Check if email already exists
+        if (userRepository.existsByEmail(email)) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("An account with this email already exists.");
         }
 
-        // 2. Hash the password
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        // 3. Hash the password
+        String hashedPassword = passwordEncoder.encode(password);
 
-        // 3. Create and save the new user
-        User user = new User(request.getEmail(), hashedPassword);
+        // 4. Create and save the new user
+        User user = new User(email, hashedPassword);
         userRepository.save(user);
 
-        // 4. Generate tokens
-        String accessToken = jwtUtil.generateAccessToken(request.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(request.getEmail());
+        // 5. Generate tokens
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
 
-        // 5. Return tokens
+        // 6. Return tokens
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new AuthResponse(accessToken, refreshToken, request.getEmail()));
+                .body(new AuthResponse(accessToken, refreshToken, email));
     }
 
     // POST /api/auth/login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
 
-        // 1. Find user by email
-        var userOptional = userRepository.findByEmail(request.getEmail());
+        // 1. Validate input
+        if (request.getEmail() == null || request.getPassword() == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Email and password are required.");
+        }
 
-        // 2. User not found
+        // 2. Find user by email
+        var userOptional = userRepository.findByEmail(request.getEmail().trim());
+
+        // 3. User not found
         if (userOptional.isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -68,18 +89,18 @@ public class AuthController {
 
         var user = userOptional.get();
 
-        // 3. Check password
+        // 4. Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid email or password.");
         }
 
-        // 4. Generate tokens
+        // 5. Generate tokens
         String accessToken = jwtUtil.generateAccessToken(user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
 
-        // 5. Return tokens
+        // 6. Return tokens
         return ResponseEntity.ok(
                 new AuthResponse(accessToken, refreshToken, user.getEmail())
         );
