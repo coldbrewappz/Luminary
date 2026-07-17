@@ -8,6 +8,7 @@ function LovesPanel({ isOpen, onClose }) {
   } = useLoves()
   const [ownText, setOwnText] = useState('')
   const [adding, setAdding] = useState(false)
+  const [confirmingKey, setConfirmingKey] = useState(null)
 
   const totalCount = lovedQuotes.length + personalQuotes.length
   const atCap = totalCount >= QUOTE_CAP
@@ -88,7 +89,7 @@ function LovesPanel({ isOpen, onClose }) {
             Quotes You Love
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => { setConfirmingKey(null); onClose() }}
             className="text-xs uppercase tracking-widest text-text-mid bg-transparent border-none cursor-pointer hover:text-text-dark transition-colors"
           >
             Close ×
@@ -152,32 +153,59 @@ function LovesPanel({ isOpen, onClose }) {
           </div>
         ) : (
           <div className="flex flex-col gap-4 mb-10">
-            {collection.map(q => (
-              <div key={`${q.type}-${q.id}`} className="bg-blush rounded-sm px-7 py-6 flex justify-between items-start gap-4">
-                <div>
-                  <p className="font-serif text-lg italic text-text-dark leading-relaxed mb-1">
-                    "{q.text}"
-                  </p>
-                  {q.author && (
-                    <span className="text-xs uppercase tracking-widest text-text-light">
-                      — {q.author}
-                    </span>
+            {collection.map(q => {
+              const key = `${q.type}-${q.id}`
+              const confirming = confirmingKey === key
+              return (
+                <div key={key} className="bg-blush rounded-sm px-7 py-6 flex flex-col gap-3">
+                  <div className="flex justify-between items-start gap-4">
+                    <div>
+                      <p className="font-serif text-lg italic text-text-dark leading-relaxed mb-1">
+                        "{q.text}"
+                      </p>
+                      {q.author && (
+                        <span className="text-xs uppercase tracking-widest text-text-light">
+                          — {q.author}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <span className="text-xs uppercase tracking-wider bg-pink-100 text-pink-400 px-2 py-0.5 rounded-full">
+                        {q.type === 'own' ? 'My words' : 'Quote'}
+                      </span>
+                      <button
+                        onClick={() => setConfirmingKey(key)}
+                        className="text-text-light hover:text-pink-300 bg-transparent border-none cursor-pointer transition-colors"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                  {confirming && (
+                    <div className="flex items-center justify-between gap-3 bg-white rounded-sm px-4 py-3">
+                      <p className="text-xs text-text-mid italic">
+                        Remove this quote from your collection?
+                      </p>
+                      <div className="flex items-center gap-4 flex-shrink-0">
+                        <button
+                          onClick={() => setConfirmingKey(null)}
+                          className="text-xs uppercase tracking-widest text-text-light hover:text-text-dark bg-transparent border-none cursor-pointer transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => { removeQuote(q.id, q.type); setConfirmingKey(null) }}
+                          className="text-xs uppercase tracking-widest text-pink-400 hover:text-pink-500 bg-transparent border-none cursor-pointer transition-colors"
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <span className="text-xs uppercase tracking-wider bg-pink-100 text-pink-400 px-2 py-0.5 rounded-full">
-                    {q.type === 'own' ? 'My words' : 'Quote'}
-                  </span>
-                  <button
-                    onClick={() => removeQuote(q.id, q.type)}
-                    className="text-text-light hover:text-pink-300 bg-transparent border-none cursor-pointer transition-colors"
-                    title="Remove"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
