@@ -8,7 +8,8 @@ import useNotification from '../hooks/useNotification'
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
-  const { lovedQuotes } = useLoves()
+  const { lovedQuotes, personalQuotes } = useLoves()
+  const savedCount = lovedQuotes.length + personalQuotes.length
   const { user, logout } = useAuth()
   const { notify } = useNotification()
   const navigate = useNavigate()
@@ -79,14 +80,14 @@ function Header() {
               width="20"
               height="20"
               stroke="#D4A0A0"
-              fill={lovedQuotes.length > 0 ? '#D4A0A0' : 'none'}
+              fill={savedCount > 0 ? '#D4A0A0' : 'none'}
               strokeWidth="1.5"
             >
               <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
             </svg>
-            {lovedQuotes.length > 0 && (
+            {savedCount > 0 && (
               <span className="text-xs text-pink-400 font-medium">
-                {lovedQuotes.length}
+                {savedCount}
               </span>
             )}
           </button>
