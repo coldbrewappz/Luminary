@@ -7,7 +7,7 @@ function HomePage() {
 
       {/* Hero */}
       <section className="text-center px-6 py-20 border-b border-linen-dark">
-        <p className="text-xs uppercase tracking-widest text-text-light mb-5">
+        <p className="text-xs uppercase tracking-widest text-[#74655B] mb-5">
           A light for the postpartum journey
         </p>
         <h1 className="font-serif text-5xl italic font-light text-text-dark leading-tight mb-0">
@@ -17,7 +17,7 @@ function HomePage() {
 
       {/* Daily Quote */}
       <div className="max-w-xl mx-auto px-6 py-16">
-        <p className="text-xs uppercase tracking-widest text-text-light text-center mb-8">
+        <p className="text-xs uppercase tracking-widest text-[#74655B] text-center mb-8">
           Today's light
         </p>
         <DailyQuote />
@@ -36,7 +36,7 @@ function HomePage() {
       {/* Our Why */}
       <section className="border-t border-linen-dark">
         <div className="max-w-xl mx-auto px-6 py-20">
-          <p className="text-xs uppercase tracking-widest text-text-light mb-5">
+          <p className="text-xs uppercase tracking-widest text-[#74655B] mb-5">
             Our why
           </p>
           <h2 className="font-serif text-4xl italic font-light text-text-dark leading-tight mb-6">
