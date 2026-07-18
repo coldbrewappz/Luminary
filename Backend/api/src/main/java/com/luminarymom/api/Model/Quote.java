@@ -1,6 +1,8 @@
 package com.luminarymom.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "quotes")
@@ -19,9 +21,28 @@ public class Quote {
     @Column(nullable = false)
     private String category;
 
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private QuoteStatus status = QuoteStatus.APPROVED;
+
+    // When this quote row was created — lets the agent tell "this month's batch"
+    // from the previously-approved set. Nullable: existing rows stay null (treated as old).
+    @JsonIgnore
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // Agent's source hint / confidence for a generated quote, shown during review.
+    @JsonIgnore
+    @Column(name = "review_note", columnDefinition = "TEXT")
+    private String reviewNote;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Quote() {}
 
@@ -46,5 +67,11 @@ public class Quote {
 
     public QuoteStatus getStatus() { return status; }
     public void setStatus(QuoteStatus status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getReviewNote() { return reviewNote; }
+    public void setReviewNote(String reviewNote) { this.reviewNote = reviewNote; }
 
 }

@@ -13,4 +13,9 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     List<Quote> findByCategoryAndStatus(String category, QuoteStatus status);
 
+    // All quotes in a category regardless of status — used to de-duplicate generated candidates.
+    List<Quote> findByCategory(String category);
+
+    int countByCategoryAndStatus(String category, QuoteStatus status);
+
 }
