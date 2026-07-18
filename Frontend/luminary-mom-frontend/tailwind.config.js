@@ -15,7 +15,7 @@ export default {
         'blush-deep': '#D4B9AC',
         'text-dark': '#2C2520',
         'text-mid': '#6B5D55',
-        'text-light': '#9C8E87',
+        'text-light': '#74655B',
       },
     },
   },
