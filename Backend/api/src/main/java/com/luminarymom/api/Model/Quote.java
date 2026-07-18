@@ -19,6 +19,10 @@ public class Quote {
     @Column(nullable = false)
     private String category;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuoteStatus status = QuoteStatus.APPROVED;
+
     public Quote() {}
 
     public Quote(Long id, String text, String author, String category) {
@@ -39,5 +43,8 @@ public class Quote {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public QuoteStatus getStatus() { return status; }
+    public void setStatus(QuoteStatus status) { this.status = status; }
 
 }

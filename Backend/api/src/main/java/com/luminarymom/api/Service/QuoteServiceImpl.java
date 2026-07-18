@@ -1,6 +1,7 @@
 package com.luminarymom.api.Service;
 
 import com.luminarymom.api.Model.Quote;
+import com.luminarymom.api.Model.QuoteStatus;
 import com.luminarymom.api.Repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,21 +18,21 @@ public class QuoteServiceImpl implements QuoteService {
 
     @Override
     public List<Quote> getAllQuotes() {
-        return quoteRepository.findAll();
+        return quoteRepository.findByStatus(QuoteStatus.APPROVED);
     }
 
     @Override
     public List<Quote> getQuotesByCategory(String category) {
-        return quoteRepository.findByCategory(category);
+        return quoteRepository.findByCategoryAndStatus(category, QuoteStatus.APPROVED);
     }
 
     @Override
     public Quote getDailyQuote() {
-        List<Quote> allQuotes = quoteRepository.findAll();
-        if (allQuotes.isEmpty()) return null;
+        List<Quote> approved = quoteRepository.findByStatus(QuoteStatus.APPROVED);
+        if (approved.isEmpty()) return null;
         int dayOfYear = LocalDate.now().getDayOfYear();
-        int index = dayOfYear % allQuotes.size();
-        return allQuotes.get(index);
+        int index = dayOfYear % approved.size();
+        return approved.get(index);
     }
 
     @Override
