@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { categories, quotes } from '../data/quotes'
 import CategoryTile from '../components/CategoryTile'
 import QuoteFeed from '../components/QuoteFeed'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 
 function QuotesPage() {
   const [activeCategory, setActiveCategory] = useState(null)
@@ -15,10 +16,6 @@ function QuotesPage() {
       setShowAllQuotes(false)
     }
   }
-
-  const filteredQuotes = activeCategory
-    ? quotes.filter(q => q.category === activeCategory)
-    : quotes
 
   const activeCategoryData = categories.find(c => c.id === activeCategory)
 
@@ -101,6 +98,7 @@ function QuotesPage() {
             </div>
           </div>
           <QuoteFeed category={activeCategory} />
+          <ScrollToTopButton />
         </>
       )}
 
