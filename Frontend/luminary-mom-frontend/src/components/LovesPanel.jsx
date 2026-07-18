@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useLoves } from '../context/LovesContext'
 
+// Rotate quote-card backgrounds so the collection isn't a wall of one color
+const cardColors = ['bg-blush', 'bg-lavender', 'bg-sage']
+
 function LovesPanel({ isOpen, onClose }) {
   const {
     lovedQuotes, personalQuotes, addOwnQuote, removeQuote, QUOTE_CAP, isLoggedIn,
@@ -153,11 +156,12 @@ function LovesPanel({ isOpen, onClose }) {
           </div>
         ) : (
           <div className="flex flex-col gap-4 mb-10">
-            {collection.map(q => {
+            {collection.map((q, index) => {
               const key = `${q.type}-${q.id}`
               const confirming = confirmingKey === key
+              const cardBg = cardColors[index % cardColors.length]
               return (
-                <div key={key} className="bg-blush rounded-sm px-7 py-6 flex flex-col gap-3">
+                <div key={key} className={`${cardBg} rounded-sm px-7 py-6 flex flex-col gap-3`}>
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <p className="font-serif text-lg italic text-text-dark leading-relaxed mb-1">
