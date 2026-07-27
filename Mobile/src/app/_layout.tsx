@@ -1,7 +1,7 @@
-import { ThemeProvider, DefaultTheme } from 'expo-router';
+import { ThemeProvider, DefaultTheme, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import AppTabs from '@/components/app-tabs';
+import { AuthProvider } from '@/context/auth';
 import { Colors } from '@/constants/theme';
 
 /**
@@ -23,9 +23,30 @@ const LuminaryTheme = {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider value={LuminaryTheme}>
-      <StatusBar style="dark" />
-      <AppTabs />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider value={LuminaryTheme}>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          {/*
+            Presented over whatever she was doing, so the quote that triggered
+            the prompt stays visible behind the scrim and she never loses her
+            place — unlike the web, where /login is a separate page.
+          */}
+          <Stack.Screen
+            name="sign-in"
+            options={{
+              presentation: 'formSheet',
+              sheetGrabberVisible: true,
+              // A formSheet needs an explicit detent or it opens at zero height
+              // and renders blank. 0.9 leaves a sliver of the screen behind
+              // visible, keeping the "sheet over content" feel from the design.
+              sheetAllowedDetents: [0.9],
+              contentStyle: { backgroundColor: Colors.linen },
+            }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
