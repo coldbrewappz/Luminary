@@ -1,2 +1,4 @@
 .claude/
 *.iml
+.idea/
+.DS_Store
