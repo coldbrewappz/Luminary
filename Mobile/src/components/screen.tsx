@@ -1,5 +1,14 @@
-import { ReactNode } from 'react';
-import { ScrollView, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { ReactElement, ReactNode } from 'react';
+import {
+  RefreshControlProps,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors, Spacing, Type } from '@/constants/theme';
@@ -13,17 +22,20 @@ type ScreenProps = {
   /** Set false for screens that manage their own scrolling, like the feed. */
   scroll?: boolean;
   contentStyle?: ViewStyle;
+  /** A <RefreshControl> for pull-to-refresh, attached to the inner ScrollView. */
+  refreshControl?: ReactElement<RefreshControlProps>;
 };
 
 /**
  * Shared chrome: linen ground, top safe-area inset, and the hairline-ruled nav
  * bar. NativeTabs owns the bottom inset, so this only claims the top edge.
  */
-export function Screen({ title, action, children, scroll = true, contentStyle }: ScreenProps) {
+export function Screen({ title, action, children, scroll = true, contentStyle, refreshControl }: ScreenProps) {
   const body = scroll ? (
     <ScrollView
       contentContainerStyle={[styles.content, contentStyle]}
-      showsVerticalScrollIndicator={false}>
+      showsVerticalScrollIndicator={false}
+      refreshControl={refreshControl}>
       {children}
     </ScrollView>
   ) : (
