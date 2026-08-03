@@ -1,5 +1,6 @@
 import { ReactElement, ReactNode } from 'react';
 import {
+  Pressable,
   RefreshControlProps,
   ScrollView,
   StyleProp,
@@ -11,12 +12,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Colors, Spacing, Type } from '@/constants/theme';
+import { Colors, HitSlop, Spacing, Type } from '@/constants/theme';
 
 type ScreenProps = {
-  /** Wordmark or screen name shown in the nav bar. */
-  title: string;
-  /** Optional control on the right of the nav bar (e.g. the "+" on Loves). */
+  /** Wordmark or screen name shown in the nav bar. Omit when `onBack` is set. */
+  title?: string;
+  /** Optional control on the right of the nav bar (e.g. the category name on the feed). */
   action?: ReactNode;
   children: ReactNode;
   /** Set false for screens that manage their own scrolling, like the feed. */
@@ -24,13 +25,26 @@ type ScreenProps = {
   contentStyle?: ViewStyle;
   /** A <RefreshControl> for pull-to-refresh, attached to the inner ScrollView. */
   refreshControl?: ReactElement<RefreshControlProps>;
+  /** When set, the nav bar shows a back chevron instead of the title. */
+  onBack?: () => void;
+  /** Text beside the back chevron (e.g. "Quotes"). */
+  backLabel?: string;
 };
 
 /**
  * Shared chrome: linen ground, top safe-area inset, and the hairline-ruled nav
  * bar. NativeTabs owns the bottom inset, so this only claims the top edge.
  */
-export function Screen({ title, action, children, scroll = true, contentStyle, refreshControl }: ScreenProps) {
+export function Screen({
+  title,
+  action,
+  children,
+  scroll = true,
+  contentStyle,
+  refreshControl,
+  onBack,
+  backLabel = 'Back',
+}: ScreenProps) {
   const body = scroll ? (
     <ScrollView
       contentContainerStyle={[styles.content, contentStyle]}
@@ -45,7 +59,19 @@ export function Screen({ title, action, children, scroll = true, contentStyle, r
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.navbar}>
-        <Text style={Type.wordmark}>{title}</Text>
+        {onBack ? (
+          <Pressable
+            onPress={onBack}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            hitSlop={12}
+            style={({ pressed }) => [styles.back, pressed && styles.backPressed]}>
+            <Text style={styles.chevron}>‹</Text>
+            <Text style={styles.backText}>{backLabel}</Text>
+          </Pressable>
+        ) : (
+          <Text style={Type.wordmark}>{title}</Text>
+        )}
         {action}
       </View>
       {body}
@@ -72,4 +98,8 @@ const styles = StyleSheet.create({
   },
   content: { paddingBottom: Spacing.xxl },
   label: { textTransform: 'uppercase' },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: HitSlop, marginLeft: -4 },
+  backPressed: { opacity: 0.5 },
+  chevron: { fontSize: 28, color: Colors.textMid, marginTop: -3 },
+  backText: { fontFamily: Type.body.fontFamily, fontSize: 15, color: Colors.textMid },
 });
