@@ -1,12 +1,21 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CARD_FILLS, QuoteCard } from '@/components/quote-card';
 import { Label, Screen } from '@/components/screen';
 import { ScrollTopButton } from '@/components/scroll-top-button';
 import { API_BASE_URL, CATEGORIES, type Quote } from '@/config/api';
 import { Colors, Spacing, Type } from '@/constants/theme';
+
+/**
+ * The floating tab bar overlaps the bottom of the screen, so the feed needs
+ * extra scroll space beneath the last card or it sits hidden behind the bar.
+ * This is the tab bar's own height; the device's bottom safe-area inset is
+ * added on top at runtime.
+ */
+const TAB_BAR_CLEARANCE = 72;
 
 /**
  * The quote feed. Ports QuoteFeed.jsx + QuoteCard.jsx. Reached by drilling into
@@ -18,6 +27,8 @@ import { Colors, Spacing, Type } from '@/constants/theme';
  */
 export default function FeedScreen() {
   const { category } = useLocalSearchParams<{ category?: string }>();
+  const insets = useSafeAreaInsets();
+  const bottomClearance = insets.bottom + TAB_BAR_CLEARANCE;
 
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +97,7 @@ export default function FeedScreen() {
             onScroll={onScroll}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, { paddingBottom: bottomClearance }]}
             ItemSeparatorComponent={() => <View style={styles.divider} />}
             renderItem={({ item, index }) => (
               <QuoteCard
@@ -98,7 +109,7 @@ export default function FeedScreen() {
               />
             )}
           />
-          <ScrollTopButton visible={showTop} onPress={scrollToTop} />
+          <ScrollTopButton visible={showTop} onPress={scrollToTop} bottomOffset={bottomClearance} />
         </>
       )}
     </Screen>
@@ -107,7 +118,7 @@ export default function FeedScreen() {
 
 const styles = StyleSheet.create({
   noPad: { paddingBottom: 0 },
-  listContent: { paddingHorizontal: Spacing.gutter, paddingTop: Spacing.lg, paddingBottom: Spacing.xxl },
+  listContent: { paddingHorizontal: Spacing.gutter, paddingTop: Spacing.lg },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: Colors.linenDark, marginVertical: 26 },
   state: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
   stateText: { color: Colors.textLight, textAlign: 'center' },

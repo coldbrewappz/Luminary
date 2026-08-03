@@ -5,6 +5,8 @@ import { Colors, Radius } from '@/constants/theme';
 type ScrollTopButtonProps = {
   visible: boolean;
   onPress: () => void;
+  /** Distance from the bottom of the screen, so it floats above the tab bar. */
+  bottomOffset?: number;
 };
 
 /**
@@ -12,7 +14,7 @@ type ScrollTopButtonProps = {
  * this too — and on iPhone it's genuinely needed, because native tabs (unlike
  * the iOS convention) don't scroll a list to the top when you tap the tab icon.
  */
-export function ScrollTopButton({ visible, onPress }: ScrollTopButtonProps) {
+export function ScrollTopButton({ visible, onPress, bottomOffset = 24 }: ScrollTopButtonProps) {
   if (!visible) return null;
 
   return (
@@ -20,7 +22,7 @@ export function ScrollTopButton({ visible, onPress }: ScrollTopButtonProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel="Back to top"
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.button, { bottom: bottomOffset }, pressed && styles.pressed]}>
       <Text style={styles.arrow}>↑</Text>
       <Text style={styles.label}>Top</Text>
     </Pressable>
@@ -30,7 +32,6 @@ export function ScrollTopButton({ visible, onPress }: ScrollTopButtonProps) {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    bottom: 24,
     right: 20,
     flexDirection: 'row',
     alignItems: 'center',
