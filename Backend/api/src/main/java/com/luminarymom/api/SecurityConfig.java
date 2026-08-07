@@ -56,7 +56,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://luminarymoms.vercel.app"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",            // web app, Vite dev server
+                "http://localhost:8081",            // iPhone app, Expo Go dev (simulator)
+                "https://luminarymoms.vercel.app"   // web app, production
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
