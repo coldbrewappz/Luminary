@@ -186,7 +186,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
 
       const response = await call(tokenRef.current);
-      if (response.status !== 401) return response;
+      // Spring Security returns 403 (not 401) for an expired or invalid token,
+      // so treat both as "token no good" and try a refresh-and-retry once.
+      if (response.status !== 401 && response.status !== 403) return response;
 
       const fresh = await refreshSession();
       return fresh ? call(fresh) : response;
