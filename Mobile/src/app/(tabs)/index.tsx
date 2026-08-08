@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
-import { QuoteCard } from '@/components/quote-card';
+import { LoveableQuoteCard } from '@/components/loveable-quote-card';
 import { Label, Screen } from '@/components/screen';
 import { API_BASE_URL, type Quote } from '@/config/api';
 import { Colors, Spacing, Type } from '@/constants/theme';
@@ -76,13 +76,7 @@ export default function TodayScreen() {
             </Text>
           </View>
         ) : (
-          <QuoteCard
-            text={quote.text}
-            author={quote.author}
-            category={quote.category}
-            fill={Colors.lavender}
-            onToggleLove={() => {}}
-          />
+          <LoveableQuoteCard quote={quote} fill={Colors.lavender} />
         )}
       </View>
     </Screen>

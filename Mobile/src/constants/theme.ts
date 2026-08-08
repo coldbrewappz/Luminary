@@ -79,5 +79,11 @@ export const Radius = { card: 3, sheet: 20 } as const;
 /** iOS minimum touch target. Every interactive element honors this. */
 export const HitSlop = 44;
 
+/**
+ * Extra scroll space below content so the last item clears the floating tab
+ * bar. Add the device's bottom safe-area inset to this at runtime.
+ */
+export const TabBarClearance = 72;
+
 /** Matches the 200ms ease-out used across the web app. */
 export const Motion = { duration: 200 } as const;

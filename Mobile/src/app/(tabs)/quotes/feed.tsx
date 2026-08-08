@@ -3,19 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CARD_FILLS, QuoteCard } from '@/components/quote-card';
+import { LoveableQuoteCard } from '@/components/loveable-quote-card';
+import { CARD_FILLS } from '@/components/quote-card';
 import { Label, Screen } from '@/components/screen';
 import { ScrollTopButton } from '@/components/scroll-top-button';
 import { API_BASE_URL, CATEGORIES, type Quote } from '@/config/api';
-import { Colors, Spacing, Type } from '@/constants/theme';
-
-/**
- * The floating tab bar overlaps the bottom of the screen, so the feed needs
- * extra scroll space beneath the last card or it sits hidden behind the bar.
- * This is the tab bar's own height; the device's bottom safe-area inset is
- * added on top at runtime.
- */
-const TAB_BAR_CLEARANCE = 72;
+import { Colors, Spacing, TabBarClearance, Type } from '@/constants/theme';
 
 /**
  * The quote feed. Ports QuoteFeed.jsx + QuoteCard.jsx. Reached by drilling into
@@ -28,7 +21,7 @@ const TAB_BAR_CLEARANCE = 72;
 export default function FeedScreen() {
   const { category } = useLocalSearchParams<{ category?: string }>();
   const insets = useSafeAreaInsets();
-  const bottomClearance = insets.bottom + TAB_BAR_CLEARANCE;
+  const bottomClearance = insets.bottom + TabBarClearance;
 
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,13 +93,7 @@ export default function FeedScreen() {
             contentContainerStyle={[styles.listContent, { paddingBottom: bottomClearance }]}
             ItemSeparatorComponent={() => <View style={styles.divider} />}
             renderItem={({ item, index }) => (
-              <QuoteCard
-                text={item.text}
-                author={item.author}
-                category={item.category}
-                fill={CARD_FILLS[index % CARD_FILLS.length]}
-                onToggleLove={() => {}}
-              />
+              <LoveableQuoteCard quote={item} fill={CARD_FILLS[index % CARD_FILLS.length]} />
             )}
           />
           <ScrollTopButton visible={showTop} onPress={scrollToTop} bottomOffset={bottomClearance} />
