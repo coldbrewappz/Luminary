@@ -13,6 +13,8 @@ type QuoteCardProps = {
   loved?: boolean;
   pending?: boolean;
   onToggleLove?: () => void;
+  /** Taller, roughly-square card with larger text — for the Today hero card. */
+  large?: boolean;
 };
 
 export function QuoteCard({
@@ -23,11 +25,12 @@ export function QuoteCard({
   loved = false,
   pending = false,
   onToggleLove,
+  large = false,
 }: QuoteCardProps) {
   return (
-    <View style={[styles.card, { backgroundColor: fill }]}>
-      <Text style={styles.mark}>&ldquo;</Text>
-      <Text style={[Type.quote, styles.text]}>{text}</Text>
+    <View style={[styles.card, large && styles.cardLarge, { backgroundColor: fill }]}>
+      <Text style={[styles.mark, large && styles.markLarge]}>&ldquo;</Text>
+      <Text style={[Type.quote, styles.text, large && styles.textLarge]}>{text}</Text>
 
       <View style={styles.meta}>
         {author ? <Text style={[Type.attrib, styles.upper]}>— {author}</Text> : <View />}
@@ -57,6 +60,14 @@ const styles = StyleSheet.create({
     paddingTop: 26,
     paddingBottom: Spacing.md,
   },
+  // Today's hero card: tall and squarish, with the quote centered in it.
+  cardLarge: {
+    minHeight: 330,
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+    paddingTop: 44,
+    paddingBottom: 28,
+  },
   mark: {
     position: 'absolute',
     top: 4,
@@ -67,7 +78,9 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
     opacity: 0.32,
   },
+  markLarge: { top: 14, left: 22, fontSize: 72, lineHeight: 80 },
   text: { marginTop: Spacing.md },
+  textLarge: { fontSize: 25, lineHeight: 35 },
   meta: {
     marginTop: Spacing.md,
     flexDirection: 'row',

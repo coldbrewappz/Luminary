@@ -14,7 +14,15 @@ import { useLoves } from '@/context/loves';
  * hooks can't run inside a render loop, but each component instance can hold its
  * own hook state (here, the per-card `pending` flag).
  */
-export function LoveableQuoteCard({ quote, fill }: { quote: Quote; fill?: string }) {
+export function LoveableQuoteCard({
+  quote,
+  fill,
+  large,
+}: {
+  quote: Quote;
+  fill?: string;
+  large?: boolean;
+}) {
   const { isLoved, toggleLove } = useLoves();
   const [pending, setPending] = useState(false);
 
@@ -46,6 +54,7 @@ export function LoveableQuoteCard({ quote, fill }: { quote: Quote; fill?: string
       loved={isLoved(quote.id)}
       pending={pending}
       onToggleLove={onToggle}
+      large={large}
     />
   );
 }

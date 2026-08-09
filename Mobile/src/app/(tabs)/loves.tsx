@@ -94,9 +94,9 @@ export default function LovesScreen() {
           onPress={() => router.push('/write')}
           accessibilityRole="button"
           accessibilityLabel="Write your own quote"
-          hitSlop={12}
-          style={({ pressed }) => pressed && styles.pressed}>
-          <Text style={styles.plus}>+</Text>
+          hitSlop={10}
+          style={({ pressed }) => [styles.writeButton, pressed && styles.pressed]}>
+          <Text style={styles.writeButtonText}>+ Write</Text>
         </Pressable>
       }
       contentStyle={{ paddingBottom: insets.bottom + TabBarClearance }}
@@ -168,7 +168,15 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   emptyBody: { textAlign: 'center' },
-  plus: { fontSize: 30, color: Colors.textMid, lineHeight: 34 },
+  writeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.heart,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  writeButtonText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1 },
 
   capBar: {
     flexDirection: 'row',
@@ -203,13 +211,13 @@ const styles = StyleSheet.create({
 
   signInButton: {
     marginTop: Spacing.sm,
-    backgroundColor: Colors.heartSoft,
+    backgroundColor: Colors.heart,
     borderRadius: Radius.card,
     height: HitSlop,
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  signInText: { ...Type.label, color: Colors.heart, letterSpacing: 2 },
+  signInText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1.5 },
   pressed: { opacity: 0.5 },
 });

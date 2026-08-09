@@ -10,8 +10,9 @@ import { Colors, Spacing, Type } from '@/constants/theme';
  * The Today tab. Ported from Frontend/.../components/DailyQuote.jsx — the fetch
  * logic is nearly identical to the web; only the rendering changes.
  *
- * The daily-quote endpoint is public, so this uses a plain fetch (no auth). The
- * Love button is shown but does nothing until Phase 15 ports LovesContext.
+ * The daily-quote endpoint is public, so this uses a plain fetch (no auth).
+ * The quote is the whole screen: a big, roughly-square card centered in the
+ * space below the headline, kept deliberately uncluttered.
  */
 export default function TodayScreen() {
   const [quote, setQuote] = useState<Quote | null>(null);
@@ -52,18 +53,20 @@ export default function TodayScreen() {
   return (
     <Screen
       title="Luminary Mom"
+      contentStyle={styles.fill}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.textLight} />
       }>
       <View style={styles.hero}>
-        <Label>A light for the postpartum journey</Label>
+        <Label style={styles.eyebrow}>A light for the postpartum journey</Label>
         <Text style={[Type.display, styles.heroText]}>You are not alone{'\n'}in this.</Text>
       </View>
 
       <View style={styles.rule} />
 
-      <View style={styles.section}>
-        <Label style={styles.centered}>Today&apos;s light</Label>
+      {/* Fills the space below the headline and centers the quote within it. */}
+      <View style={styles.todaySection}>
+        <Label style={[styles.centered, styles.eyebrow]}>Today&apos;s light</Label>
 
         {loading ? (
           <View style={styles.stateCard}>
@@ -76,7 +79,7 @@ export default function TodayScreen() {
             </Text>
           </View>
         ) : (
-          <LoveableQuoteCard quote={quote} fill={Colors.lavender} />
+          <LoveableQuoteCard quote={quote} fill={Colors.lavender} large />
         )}
       </View>
     </Screen>
@@ -84,6 +87,8 @@ export default function TodayScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Grow to fill the viewport so the quote can sit centered in the space.
+  fill: { flexGrow: 1 },
   hero: {
     paddingHorizontal: Spacing.gutter,
     paddingTop: Spacing.xl,
@@ -92,15 +97,23 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   heroText: { textAlign: 'center' },
+  // Bigger than the default 10pt eyebrow — these read as too small on Today.
+  eyebrow: { fontSize: 12, letterSpacing: 2.5 },
   rule: { height: StyleSheet.hairlineWidth, backgroundColor: Colors.linenDark },
-  section: { paddingHorizontal: Spacing.gutter, paddingTop: 28, gap: 18 },
+  todaySection: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.gutter,
+    paddingVertical: Spacing.xl,
+    gap: 18,
+  },
   centered: { textAlign: 'center' },
-  // Loading and error share the card shape so the layout doesn't jump.
+  // Same height as the large card so the layout doesn't jump when it loads.
   stateCard: {
     backgroundColor: Colors.lavender,
     borderRadius: 3,
     padding: 40,
-    minHeight: 160,
+    minHeight: 330,
     alignItems: 'center',
     justifyContent: 'center',
   },

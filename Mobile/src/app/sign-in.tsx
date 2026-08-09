@@ -100,7 +100,7 @@ export default function SignInSheet() {
             accessibilityRole="button"
             style={({ pressed }) => [styles.button, (pressed || busy) && styles.buttonPressed]}>
             {busy ? (
-              <ActivityIndicator color={Colors.heart} />
+              <ActivityIndicator color={Colors.textDark} />
             ) : (
               <Text style={styles.buttonText}>
                 {isRegister ? 'CREATE ACCOUNT' : 'SIGN IN'}
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   error: { ...Type.body, color: Colors.danger, fontSize: 13 },
   button: {
-    backgroundColor: Colors.heartSoft,
+    backgroundColor: Colors.heart,
     borderRadius: Radius.card,
     height: HitSlop + 2,
     alignItems: 'center',
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xs,
   },
   buttonPressed: { opacity: 0.6 },
-  buttonText: { ...Type.label, color: Colors.heart, letterSpacing: 2.4 },
+  buttonText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1.8 },
   switch: { marginTop: Spacing.lg, alignItems: 'center', minHeight: HitSlop, justifyContent: 'center' },
   switchLink: { color: Colors.textDark },
 });

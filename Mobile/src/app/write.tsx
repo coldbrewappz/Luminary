@@ -62,7 +62,7 @@ export default function WriteSheet() {
             (pressed || busy || !trimmed || atCap) && styles.buttonDisabled,
           ]}>
           {busy ? (
-            <ActivityIndicator color={Colors.heart} />
+            <ActivityIndicator color={Colors.textDark} />
           ) : (
             <Text style={styles.buttonText}>ADD TO MY COLLECTION</Text>
           )}
@@ -107,15 +107,15 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   button: {
-    backgroundColor: Colors.heartSoft,
+    backgroundColor: Colors.heart,
     borderRadius: Radius.card,
     height: HitSlop + 2,
     paddingHorizontal: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonDisabled: { opacity: 0.4 },
-  buttonText: { ...Type.label, color: Colors.heart, letterSpacing: 2 },
+  buttonDisabled: { opacity: 0.55 },
+  buttonText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1.5 },
   count: { ...Type.body, fontSize: 12, color: Colors.textLight },
   capNote: { ...Type.body, fontSize: 13, color: Colors.textMid, fontStyle: 'italic', marginTop: Spacing.sm },
 });
