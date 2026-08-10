@@ -78,7 +78,7 @@ export default function QuotesGridScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: Spacing.gutter, paddingTop: Spacing.xl, paddingBottom: Spacing.lg },
+  header: { paddingHorizontal: Spacing.gutter, paddingTop: 50, paddingBottom: Spacing.lg },
   centered: { textAlign: 'center' },
   grid: { paddingHorizontal: Spacing.gutter, gap: 11 },
   row: { flexDirection: 'row', gap: 11 },

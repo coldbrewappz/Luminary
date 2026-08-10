@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   hero: {
     paddingHorizontal: Spacing.gutter,
     paddingTop: Spacing.xl,
-    paddingBottom: Spacing.xl,
+    paddingBottom: Spacing.md,
     alignItems: 'center',
     gap: Spacing.md,
   },
@@ -104,7 +104,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: Spacing.gutter,
-    paddingVertical: Spacing.xl,
+    // Asymmetric: a small top inset and a larger bottom one biases the centered
+    // quote upward, closing the gap under the headline without top-aligning it.
+    paddingTop: Spacing.sm,
+    paddingBottom: 76,
     gap: 18,
   },
   centered: { textAlign: 'center' },
