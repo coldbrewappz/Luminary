@@ -57,6 +57,8 @@ export default function RootLayout() {
                 contentStyle: { backgroundColor: Colors.linen },
               }}
             />
+            {/* About — a normal pushed card (slides in, swipe-back), from the You tab. */}
+            <Stack.Screen name="about" />
           </Stack>
         </ThemeProvider>
       </LovesProvider>
