@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: Spacing.xs,
   },
-  buttonPressed: { opacity: 0.6 },
+  buttonPressed: { opacity: 0.5 },
   buttonText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1.8 },
   switch: { marginTop: Spacing.lg, alignItems: 'center', minHeight: HitSlop, justifyContent: 'center' },
   switchLink: { color: Colors.textDark },

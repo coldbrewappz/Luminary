@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  pressed: { opacity: 0.7 },
+  pressed: { opacity: 0.5 },
   arrow: { fontSize: 15, color: Colors.textMid },
   label: {
     fontSize: 10,

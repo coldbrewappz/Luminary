@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { PersonalQuote, QUOTE_CAP, SavedQuote } from '@/config/api';
 import { useAuth } from '@/context/auth';
+import { haptics } from '@/lib/haptics';
 
 /**
  * Ported from Frontend/.../context/LovesContext.jsx. Same shape and rules; the
@@ -91,6 +92,7 @@ export function LovesProvider({ children }: { children: ReactNode }) {
           const res = await authFetch(`/api/loves/${quote.id}`, { method: 'DELETE' });
           if (!res.ok) throw new Error('delete failed');
           setLovedQuotes((prev) => prev.filter((q) => q.quote?.id !== quote.id));
+          haptics.remove();
           return 'removed';
         } catch (err) {
           console.warn('Could not remove love:', err);
@@ -99,7 +101,10 @@ export function LovesProvider({ children }: { children: ReactNode }) {
       }
 
       // Not saved → add it, unless the collection is full.
-      if (atCap) return 'cap';
+      if (atCap) {
+        haptics.warning();
+        return 'cap';
+      }
       try {
         const res = await authFetch('/api/loves', {
           method: 'POST',
@@ -109,6 +114,7 @@ export function LovesProvider({ children }: { children: ReactNode }) {
         if (!res.ok) throw new Error('save failed');
         const saved = (await res.json()) as SavedQuote;
         setLovedQuotes((prev) => [...prev, saved]);
+        haptics.save();
         return 'saved';
       } catch (err) {
         console.warn('Could not save love:', err);
@@ -130,6 +136,7 @@ export function LovesProvider({ children }: { children: ReactNode }) {
         if (!res.ok) throw new Error('add failed');
         const saved = (await res.json()) as PersonalQuote;
         setPersonalQuotes((prev) => [...prev, saved]);
+        haptics.success();
         return true;
       } catch (err) {
         console.warn('Could not add personal quote:', err);
@@ -144,6 +151,7 @@ export function LovesProvider({ children }: { children: ReactNode }) {
       try {
         await authFetch(`/api/loves/${quoteId}`, { method: 'DELETE' });
         setLovedQuotes((prev) => prev.filter((q) => q.quote?.id !== quoteId));
+        haptics.remove();
       } catch (err) {
         console.warn('Could not remove saved quote:', err);
       }
@@ -156,6 +164,7 @@ export function LovesProvider({ children }: { children: ReactNode }) {
       try {
         await authFetch(`/api/personal/${personalId}`, { method: 'DELETE' });
         setPersonalQuotes((prev) => prev.filter((q) => q.id !== personalId));
+        haptics.remove();
       } catch (err) {
         console.warn('Could not remove personal quote:', err);
       }
