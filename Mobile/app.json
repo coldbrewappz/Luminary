@@ -10,7 +10,6 @@
     "backgroundColor": "#F0EAE0",
     "ios": {
       "bundleIdentifier": "com.coldbrewapps.luminarymom",
-      "icon": "./assets/expo.icon",
       "supportsTablet": false
     },
     "android": {
