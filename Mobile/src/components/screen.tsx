@@ -29,6 +29,11 @@ type ScreenProps = {
   onBack?: () => void;
   /** Text beside the back chevron (e.g. "Quotes"). */
   backLabel?: string;
+  /**
+   * Drop the shared nav bar entirely and let the screen draw its own header in
+   * the scroll content. Today uses this for its logo + stacked-wordmark lockup.
+   */
+  bare?: boolean;
 };
 
 /**
@@ -44,6 +49,7 @@ export function Screen({
   refreshControl,
   onBack,
   backLabel = 'Back',
+  bare = false,
 }: ScreenProps) {
   const body = scroll ? (
     <ScrollView
@@ -58,22 +64,24 @@ export function Screen({
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.navbar}>
-        {onBack ? (
-          <Pressable
-            onPress={onBack}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            hitSlop={12}
-            style={({ pressed }) => [styles.back, pressed && styles.backPressed]}>
-            <Text style={styles.chevron}>‹</Text>
-            <Text style={styles.backText}>{backLabel}</Text>
-          </Pressable>
-        ) : (
-          <Text style={Type.wordmark}>{title}</Text>
-        )}
-        {action}
-      </View>
+      {!bare && (
+        <View style={styles.navbar}>
+          {onBack ? (
+            <Pressable
+              onPress={onBack}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+              hitSlop={12}
+              style={({ pressed }) => [styles.back, pressed && styles.backPressed]}>
+              <Text style={styles.chevron}>‹</Text>
+              <Text style={styles.backText}>{backLabel}</Text>
+            </Pressable>
+          ) : (
+            <Text style={Type.wordmark}>{title}</Text>
+          )}
+          {action}
+        </View>
+      )}
       {body}
     </SafeAreaView>
   );

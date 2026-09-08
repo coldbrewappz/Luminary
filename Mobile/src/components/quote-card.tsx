@@ -30,12 +30,20 @@ export function QuoteCard({
   return (
     <View style={[styles.card, large && styles.cardLarge, { backgroundColor: fill }]}>
       <Text style={[styles.mark, large && styles.markLarge]}>&ldquo;</Text>
+      {/* Category rides the top-right corner of every card. */}
+      {category ? (
+        <Text style={[styles.chip, styles.chipTop, large && styles.chipTopLarge]}>
+          {category.toUpperCase()}
+        </Text>
+      ) : null}
+
       <Text style={[Type.quote, styles.text, large && styles.textLarge]}>{text}</Text>
 
-      <View style={styles.meta}>
-        {author ? <Text style={[Type.attrib, styles.upper]}>— {author}</Text> : <View />}
-        {category ? <Text style={styles.chip}>{category.toUpperCase()}</Text> : null}
-      </View>
+      {author ? (
+        <View style={styles.meta}>
+          <Text style={[Type.attrib, styles.upper]}>— {author}</Text>
+        </View>
+      ) : null}
 
       {onToggleLove ? (
         <Pressable
@@ -44,9 +52,8 @@ export function QuoteCard({
           accessibilityRole="button"
           accessibilityLabel={loved ? 'Remove from your collection' : 'Save to your collection'}
           style={({ pressed }) => [styles.love, (pressed || pending) && styles.lovePressed]}>
-          <Text style={[styles.loveText, loved && styles.loveTextOn]}>
-            {loved ? '♥  LOVED' : '♡  LOVE'}
-          </Text>
+          <Text style={[styles.loveHeart, loved && styles.loveOn]}>{loved ? '♥' : '♡'}</Text>
+          <Text style={[styles.loveLabel, loved && styles.loveOn]}>{loved ? 'LOVED' : 'LOVE'}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -81,13 +88,7 @@ const styles = StyleSheet.create({
   markLarge: { top: 14, left: 22, fontSize: 72, lineHeight: 80 },
   text: { marginTop: Spacing.md },
   textLarge: { fontSize: 25, lineHeight: 35 },
-  meta: {
-    marginTop: Spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.sm,
-  },
+  meta: { marginTop: Spacing.md },
   upper: { textTransform: 'uppercase' },
   chip: {
     ...Type.label,
@@ -98,9 +99,24 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     overflow: 'hidden',
   },
-  /** 44pt tall: the text is small, the target is not. */
-  love: { height: HitSlop, justifyContent: 'center', marginBottom: -Spacing.md },
+  chipTop: { position: 'absolute', top: 14, right: 14 },
+  chipTopLarge: { top: 18, right: 18 },
+  /** 44pt tall target; the heart + label sit on one row, bigger and darker now. */
+  love: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    height: HitSlop,
+    marginBottom: -Spacing.md,
+  },
   lovePressed: { opacity: 0.5 },
-  loveText: { ...Type.label, letterSpacing: 1.5, color: Colors.textLight },
-  loveTextOn: { color: Colors.heart },
+  loveHeart: { fontFamily: Type.label.fontFamily, fontSize: 19, color: Colors.textDark },
+  loveLabel: {
+    ...Type.label,
+    fontSize: 12.5,
+    letterSpacing: 1.8,
+    fontWeight: '500',
+    color: Colors.textDark,
+  },
+  loveOn: { color: Colors.heart },
 });
