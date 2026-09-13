@@ -1,12 +1,15 @@
 import { router } from 'expo-router';
 import { ReactNode } from 'react';
-import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Label, Screen } from '@/components/screen';
 import { Colors, HitSlop, Radius, Spacing, TabBarClearance, Type } from '@/constants/theme';
 import { useAuth } from '@/context/auth';
 import { useLoves } from '@/context/loves';
+
+// Brand mark, shared with the Today header.
+const LOGO = require('../../../assets/images/icon.png');
 
 /**
  * The You tab: account home. Share is the first thing (its own CTA card), then
@@ -81,6 +84,7 @@ export default function YouScreen() {
     <Screen title="You" contentStyle={{ paddingBottom: insets.bottom + TabBarClearance }}>
       {/* Greeting banner */}
       <View style={styles.banner}>
+        <Image source={LOGO} style={styles.bannerLogo} accessible={false} />
         <Text style={styles.greeting}>Hello, Mamma</Text>
         <Label style={styles.bannerEyebrow}>Your account</Label>
         <Text style={styles.email}>{user.email}</Text>
@@ -212,6 +216,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  bannerLogo: { width: 60, height: 60, borderRadius: 13, marginBottom: 2 },
   greeting: { ...Type.title, fontSize: 26 },
   bannerEyebrow: { marginTop: Spacing.sm, fontSize: 10 },
   email: { ...Type.body, fontSize: 15, color: Colors.textMid },

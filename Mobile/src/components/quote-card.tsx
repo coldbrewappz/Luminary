@@ -107,6 +107,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 7,
     height: HitSlop,
+    // Sits low on the card with a clear gap above, off the author line.
+    marginTop: Spacing.lg,
     marginBottom: -Spacing.md,
   },
   lovePressed: { opacity: 0.5 },
