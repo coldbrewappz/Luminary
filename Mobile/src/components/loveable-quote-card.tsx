@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { QuoteCard } from '@/components/quote-card';
 import { type Quote } from '@/config/api';
 import { useLoves } from '@/context/loves';
+import { useShare } from '@/context/share';
 
 /**
  * A QuoteCard wired to the loves context: it knows whether the quote is saved,
@@ -24,6 +25,7 @@ export function LoveableQuoteCard({
   large?: boolean;
 }) {
   const { isLoved, toggleLove } = useLoves();
+  const { shareQuote } = useShare();
   const [pending, setPending] = useState(false);
 
   async function onToggle() {
@@ -54,6 +56,7 @@ export function LoveableQuoteCard({
       loved={isLoved(quote.id)}
       pending={pending}
       onToggleLove={onToggle}
+      onShare={() => shareQuote(quote)}
       large={large}
     />
   );

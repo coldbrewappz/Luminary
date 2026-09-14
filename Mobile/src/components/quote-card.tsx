@@ -13,6 +13,8 @@ type QuoteCardProps = {
   loved?: boolean;
   pending?: boolean;
   onToggleLove?: () => void;
+  /** Opens the native share sheet with this quote as an image. */
+  onShare?: () => void;
   /** Taller, roughly-square card with larger text — for the Today hero card. */
   large?: boolean;
 };
@@ -25,6 +27,7 @@ export function QuoteCard({
   loved = false,
   pending = false,
   onToggleLove,
+  onShare,
   large = false,
 }: QuoteCardProps) {
   return (
@@ -45,16 +48,30 @@ export function QuoteCard({
         </View>
       ) : null}
 
-      {onToggleLove ? (
-        <Pressable
-          onPress={onToggleLove}
-          disabled={pending}
-          accessibilityRole="button"
-          accessibilityLabel={loved ? 'Remove from your collection' : 'Save to your collection'}
-          style={({ pressed }) => [styles.love, (pressed || pending) && styles.lovePressed]}>
-          <Text style={[styles.loveHeart, loved && styles.loveOn]}>{loved ? '♥' : '♡'}</Text>
-          <Text style={[styles.loveLabel, loved && styles.loveOn]}>{loved ? 'LOVED' : 'LOVE'}</Text>
-        </Pressable>
+      {onToggleLove || onShare ? (
+        <View style={styles.toolbar}>
+          {onToggleLove ? (
+            <Pressable
+              onPress={onToggleLove}
+              disabled={pending}
+              accessibilityRole="button"
+              accessibilityLabel={loved ? 'Remove from your collection' : 'Save to your collection'}
+              style={({ pressed }) => [styles.action, (pressed || pending) && styles.pressed]}>
+              <Text style={[styles.heart, loved && styles.on]}>{loved ? '♥' : '♡'}</Text>
+              <Text style={[styles.actionLabel, loved && styles.on]}>{loved ? 'LOVED' : 'LOVE'}</Text>
+            </Pressable>
+          ) : null}
+          {onShare ? (
+            <Pressable
+              onPress={onShare}
+              accessibilityRole="button"
+              accessibilityLabel="Share this quote"
+              style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
+              <Text style={styles.shareIcon}>↗</Text>
+              <Text style={styles.actionLabel}>SHARE</Text>
+            </Pressable>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -101,24 +118,26 @@ const styles = StyleSheet.create({
   },
   chipTop: { position: 'absolute', top: 14, right: 14 },
   chipTopLarge: { top: 18, right: 18 },
-  /** 44pt tall target; the heart + label sit on one row, bigger and darker now. */
-  love: {
+  // Love + Share sit together as a little toolbar, low on the card with a clear
+  // gap above the author line.
+  toolbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
-    height: HitSlop,
-    // Sits low on the card with a clear gap above, off the author line.
+    gap: 22,
     marginTop: Spacing.lg,
     marginBottom: -Spacing.md,
   },
-  lovePressed: { opacity: 0.5 },
-  loveHeart: { fontFamily: Type.label.fontFamily, fontSize: 19, color: Colors.textDark },
-  loveLabel: {
+  /** Each action is a 44pt-tall target; icon + label on one row, bigger and darker. */
+  action: { flexDirection: 'row', alignItems: 'center', gap: 7, height: HitSlop },
+  pressed: { opacity: 0.5 },
+  heart: { fontFamily: Type.label.fontFamily, fontSize: 19, color: Colors.textDark },
+  shareIcon: { fontFamily: Type.label.fontFamily, fontSize: 18, color: Colors.textDark, marginTop: -1 },
+  actionLabel: {
     ...Type.label,
     fontSize: 12.5,
     letterSpacing: 1.8,
     fontWeight: '500',
     color: Colors.textDark,
   },
-  loveOn: { color: Colors.heart },
+  on: { color: Colors.heart },
 });

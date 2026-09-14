@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { AuthProvider } from '@/context/auth';
 import { LovesProvider } from '@/context/loves';
+import { ShareProvider } from '@/context/share';
 import { Colors } from '@/constants/theme';
 
 /**
@@ -26,7 +27,8 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <LovesProvider>
-        <ThemeProvider value={LuminaryTheme}>
+        <ShareProvider>
+          <ThemeProvider value={LuminaryTheme}>
           <StatusBar style="dark" />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
@@ -60,7 +62,8 @@ export default function RootLayout() {
             {/* About — a normal pushed card (slides in, swipe-back), from the You tab. */}
             <Stack.Screen name="about" />
           </Stack>
-        </ThemeProvider>
+          </ThemeProvider>
+        </ShareProvider>
       </LovesProvider>
     </AuthProvider>
   );
