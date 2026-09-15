@@ -62,7 +62,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",            // web app, Vite dev server
                 "http://localhost:8081",            // iPhone app, Expo Go dev (simulator)
-                "https://luminarymoms.vercel.app"   // web app, production
+                "https://luminarymoms.vercel.app",  // web app, Vercel default domain
+                "https://luminarymom.com",          // web app, custom domain
+                "https://www.luminarymom.com"       // web app, custom domain (www)
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
