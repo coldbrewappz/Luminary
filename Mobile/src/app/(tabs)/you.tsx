@@ -2,7 +2,7 @@ import DateTimePicker, { type DateTimePickerEvent } from '@react-native-communit
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { ReactNode, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Label, Screen } from '@/components/screen';
@@ -157,7 +157,11 @@ export default function YouScreen() {
       <Section label="About">
         <Row title="About Luminary Mom" chevron onPress={() => router.push('/about')} />
         <View style={styles.rowDivider} />
-        <Row title="Privacy Policy" chevron onPress={() => comingSoon('Privacy Policy')} />
+        <Row
+          title="Privacy Policy"
+          chevron
+          onPress={() => Linking.openURL('https://luminarymom.com/privacy')}
+        />
       </Section>
 
       <Section label="Account settings">

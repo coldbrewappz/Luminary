@@ -26,6 +26,12 @@ function Footer() {
           >
             About
           </Link>
+          <Link
+            to="/privacy"
+            className="text-xs uppercase tracking-widest text-text-light hover:text-text-dark transition-colors"
+          >
+            Privacy
+          </Link>
         </nav>
 
       </div>
