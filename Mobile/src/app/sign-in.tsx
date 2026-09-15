@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -31,6 +32,9 @@ export default function SignInSheet() {
 
   async function submit() {
     if (busy) return;
+    // Drop the keyboard so the error and the "Create a free account" link below
+    // show fully clear of the keys, instead of tucked right against them.
+    Keyboard.dismiss();
     const trimmed = email.trim();
     if (!trimmed || !password) {
       setError('Enter your email and password to continue.');
