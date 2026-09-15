@@ -1,12 +1,20 @@
+import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
-import { ReactNode } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { ReactNode, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Pressable, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Label, Screen } from '@/components/screen';
 import { Colors, HitSlop, Radius, Spacing, TabBarClearance, Type } from '@/constants/theme';
 import { useAuth } from '@/context/auth';
 import { useLoves } from '@/context/loves';
+import {
+  cancelDailyReminder,
+  ensureNotificationPermission,
+  isReminderScheduled,
+  scheduleDailyReminder,
+} from '@/lib/notifications';
 
 // Brand mark, shared with the Today header.
 const LOGO = require('../../../assets/images/icon.png');
@@ -113,7 +121,7 @@ export default function YouScreen() {
       </Section>
 
       <Section label="Notifications">
-        <Row title="Daily reminder" subtitle="Coming soon" muted />
+        <DailyReminder />
       </Section>
 
       <Section label="Display">
@@ -185,6 +193,109 @@ function Row({
       </View>
       {chevron ? <Text style={styles.chevron}>›</Text> : null}
     </Pressable>
+  );
+}
+
+const REMINDER_ON_KEY = 'reminderEnabled';
+const REMINDER_TIME_KEY = 'reminderTime'; // "hour:minute", 24h
+
+/** A Date set to today at the given time — the shape DateTimePicker wants. */
+function timeAt(hour: number, minute: number): Date {
+  const d = new Date();
+  d.setHours(hour, minute, 0, 0);
+  return d;
+}
+
+/**
+ * The daily-reminder controls: a switch, and — when it's on — a native time
+ * picker. Its own little component so its hooks sit below YouScreen's early
+ * returns (signed-out / loading), which can't hold hooks after them.
+ */
+function DailyReminder() {
+  const [ready, setReady] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+  const [time, setTime] = useState(() => timeAt(8, 0));
+
+  // Load the saved setting, and re-arm the schedule if iOS somehow lost it.
+  useEffect(() => {
+    (async () => {
+      try {
+        let hour = 8;
+        let minute = 0;
+        const savedTime = await SecureStore.getItemAsync(REMINDER_TIME_KEY);
+        if (savedTime) {
+          [hour, minute] = savedTime.split(':').map(Number);
+          setTime(timeAt(hour, minute));
+        }
+        const on = (await SecureStore.getItemAsync(REMINDER_ON_KEY)) === 'true';
+        setEnabled(on);
+        if (on && !(await isReminderScheduled())) {
+          await scheduleDailyReminder(hour, minute);
+        }
+      } catch {
+        // Defaults (off, 8:00) are fine.
+      } finally {
+        setReady(true);
+      }
+    })();
+  }, []);
+
+  async function onToggle(next: boolean) {
+    if (next) {
+      const granted = await ensureNotificationPermission();
+      if (!granted) {
+        Alert.alert(
+          'Notifications are off',
+          'To get your daily reminder, turn on notifications for Luminary Mom in Settings.'
+        );
+        return; // leave the switch off
+      }
+      await scheduleDailyReminder(time.getHours(), time.getMinutes());
+      await SecureStore.setItemAsync(REMINDER_ON_KEY, 'true');
+      setEnabled(true);
+    } else {
+      await cancelDailyReminder();
+      await SecureStore.setItemAsync(REMINDER_ON_KEY, 'false');
+      setEnabled(false);
+    }
+  }
+
+  async function onChangeTime(_event: DateTimePickerEvent, picked?: Date) {
+    if (!picked) return;
+    setTime(picked);
+    await SecureStore.setItemAsync(REMINDER_TIME_KEY, `${picked.getHours()}:${picked.getMinutes()}`);
+    if (enabled) await scheduleDailyReminder(picked.getHours(), picked.getMinutes());
+  }
+
+  // Wait until we know the saved state so the switch doesn't flash the wrong way.
+  if (!ready) return null;
+
+  return (
+    <>
+      <View style={styles.row}>
+        <View style={styles.rowMiddle}>
+          <Text style={styles.rowTitle}>Daily reminder</Text>
+          <Text style={styles.rowSubtitle}>A quote each morning</Text>
+        </View>
+        <Switch
+          value={enabled}
+          onValueChange={onToggle}
+          trackColor={{ true: Colors.heart, false: '#CFC7BA' }}
+          ios_backgroundColor="#CFC7BA"
+        />
+      </View>
+      {enabled ? (
+        <>
+          <View style={styles.rowDivider} />
+          <View style={styles.row}>
+            <View style={styles.rowMiddle}>
+              <Text style={styles.rowTitle}>Time</Text>
+            </View>
+            <DateTimePicker value={time} mode="time" onChange={onChangeTime} accentColor={Colors.heart} />
+          </View>
+        </>
+      ) : null}
+    </>
   );
 }
 
