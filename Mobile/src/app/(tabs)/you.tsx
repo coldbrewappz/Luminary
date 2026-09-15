@@ -30,7 +30,7 @@ const LOGO = require('../../../assets/images/icon.png');
  */
 export default function YouScreen() {
   const insets = useSafeAreaInsets();
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, authFetch } = useAuth();
   const { total } = useLoves();
 
   // Reading the Keychain takes a moment. Showing "signed out" during that
@@ -88,6 +88,32 @@ export default function YouScreen() {
     ]);
   }
 
+  function confirmDeleteAccount() {
+    Alert.alert(
+      'Delete account?',
+      'This permanently deletes your account and everything you’ve saved. This can’t be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const res = await authFetch('/api/auth/me', { method: 'DELETE' });
+              if (res.ok) {
+                await logout(); // clears the session → drops back to signed-out
+              } else {
+                Alert.alert('Something went wrong', 'We couldn’t delete your account. Please try again.');
+              }
+            } catch {
+              Alert.alert('Something went wrong', 'We couldn’t delete your account. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  }
+
   return (
     <Screen title="You" contentStyle={{ paddingBottom: insets.bottom + TabBarClearance }}>
       {/* Greeting banner */}
@@ -141,7 +167,7 @@ export default function YouScreen() {
       </Section>
 
       <Section label="Account management">
-        <Row title="Delete Account" destructive onPress={() => comingSoon('Delete Account')} />
+        <Row title="Delete Account" destructive onPress={confirmDeleteAccount} />
       </Section>
 
       <Text style={styles.version}>Luminary Mom · 1.0</Text>

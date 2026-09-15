@@ -40,6 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints — no token needed
                         .requestMatchers(HttpMethod.GET, "/api/quotes/**").permitAll()
+                        // Deleting your own account needs a token — must come before the
+                        // /api/auth/** permitAll below (first match wins).
+                        .requestMatchers(HttpMethod.DELETE, "/api/auth/me").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         // Protected endpoints — token required
                         .requestMatchers("/api/loves/**").authenticated()

@@ -1,11 +1,15 @@
 package com.luminarymom.api.Auth;
 
 import com.luminarymom.api.Model.User;
+import com.luminarymom.api.Repository.PersonalQuoteRepository;
+import com.luminarymom.api.Repository.SavedQuoteRepository;
 import com.luminarymom.api.Repository.UserRepository;
 import com.luminarymom.api.Security.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +20,19 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final SavedQuoteRepository savedQuoteRepository;
+    private final PersonalQuoteRepository personalQuoteRepository;
 
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
-                          JwtUtil jwtUtil) {
+                          JwtUtil jwtUtil,
+                          SavedQuoteRepository savedQuoteRepository,
+                          PersonalQuoteRepository personalQuoteRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.savedQuoteRepository = savedQuoteRepository;
+        this.personalQuoteRepository = personalQuoteRepository;
     }
 
     private static final java.util.regex.Pattern EMAIL_PATTERN =
@@ -150,6 +160,28 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid refresh token.");
         }
+    }
+
+    // DELETE /api/auth/me
+    // Permanently delete the signed-in user's account. Apple requires in-app
+    // account deletion. Removes the user's saved and personal quotes first
+    // (their user_id FKs are non-null), then the user — all in one transaction.
+    @DeleteMapping("/me")
+    @Transactional
+    public ResponseEntity<?> deleteAccount(Authentication authentication) {
+
+        String email = authentication.getName();
+        var userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        User user = userOptional.get();
+        savedQuoteRepository.deleteByUser(user);
+        personalQuoteRepository.deleteByUser(user);
+        userRepository.delete(user);
+
+        return ResponseEntity.noContent().build(); // 204
     }
 
 }

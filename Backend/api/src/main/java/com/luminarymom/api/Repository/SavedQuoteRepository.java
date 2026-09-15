@@ -27,4 +27,7 @@ public interface SavedQuoteRepository extends JpaRepository<SavedQuote, Long> {
     // Delete a specific saved quote for a user
     void deleteByUserAndQuote(User user, Quote quote);
 
+    // Delete every saved quote for a user (used when deleting the account)
+    void deleteByUser(User user);
+
 }

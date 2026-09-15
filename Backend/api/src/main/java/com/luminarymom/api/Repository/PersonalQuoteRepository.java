@@ -16,4 +16,7 @@ public interface PersonalQuoteRepository extends JpaRepository<PersonalQuote, Lo
 
     void deleteByIdAndUser(Long id, User user);
 
+    // Delete every personal quote for a user (used when deleting the account)
+    void deleteByUser(User user);
+
 }
