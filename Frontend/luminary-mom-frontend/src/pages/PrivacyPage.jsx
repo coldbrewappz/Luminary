@@ -46,8 +46,8 @@ function PrivacyPage() {
         </div>
 
         <p className="text-sm font-light text-text-mid leading-loose mb-11">
-          Luminary Mom (&ldquo;we,&rdquo; &ldquo;us&rdquo;) is a small app made to be a little
-          light for moms. We keep what we collect to the bare minimum, and this page explains
+          Luminary Mom (&ldquo;we,&rdquo; &ldquo;us&rdquo;) is a small app and website made to be a
+          little light for moms. We keep what we collect to the bare minimum, and this page explains
           exactly what that is and how we handle it &mdash; in plain language.
         </p>
 
