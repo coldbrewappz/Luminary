@@ -108,7 +108,15 @@ public class AuthController {
 
     // POST /api/auth/refresh
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody String refreshToken) {
+    public ResponseEntity<?> refresh(@RequestBody RefreshRequest request) {
+
+        // Accept a JSON body { "refreshToken": "..." }, like register/login.
+        String refreshToken = request.getRefreshToken();
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Refresh token is required.");
+        }
 
         try {
             // 1. Extract email from refresh token
