@@ -58,17 +58,19 @@ export default function SignInSheet() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-        <Label>Save a little light for later</Label>
+        <Label>{isRegister ? 'New here?' : 'Welcome back'}</Label>
         <Text style={[Type.title, styles.heading]}>
-          {isRegister ? 'Welcome in.' : 'Welcome back.'}
+          {isRegister ? 'Create your account.' : 'Sign in.'}
         </Text>
         <Text style={Type.body}>
           {isRegister
-            ? 'Create a free account and your collection is saved for good.'
-            : 'Sign in and we’ll add this quote to your collection.'}
+            ? 'Save your collection for free.'
+            : 'Let’s get you back to your collection.'}
         </Text>
 
-        <View style={styles.fields}>
+        {/* The form sits in a colour-coded frame — lavender for sign in, sage for
+            create account — a second, always-visible cue for which mode you're in. */}
+        <View style={[styles.fields, isRegister ? styles.frameCreate : styles.frameSignIn]}>
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -136,7 +138,15 @@ const styles = StyleSheet.create({
   // with flex:1 children resolves to zero height and renders blank.
   content: { flexGrow: 1, padding: Spacing.gutter, paddingTop: Spacing.lg, gap: Spacing.sm },
   heading: { marginTop: Spacing.xs },
-  fields: { marginTop: Spacing.lg, gap: Spacing.sm },
+  fields: {
+    marginTop: Spacing.lg,
+    gap: Spacing.sm,
+    borderWidth: 1.5,
+    borderRadius: 14,
+    padding: Spacing.md,
+  },
+  frameSignIn: { borderColor: Colors.lavenderDeep, backgroundColor: 'rgba(221, 213, 240, 0.35)' },
+  frameCreate: { borderColor: Colors.sageDeep, backgroundColor: 'rgba(217, 231, 210, 0.45)' },
   field: {
     backgroundColor: Colors.white,
     borderWidth: StyleSheet.hairlineWidth,
