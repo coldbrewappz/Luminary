@@ -41,7 +41,7 @@ export const CATEGORIES: { id: CategoryId; name: string; emoji: string; theme: '
   { id: 'healing', name: 'Healing', emoji: '🌿', theme: 'blush' },
   { id: 'hope', name: 'Hope', emoji: '☀️', theme: 'lavender' },
   { id: 'strength', name: 'Strength', emoji: '💪', theme: 'blush' },
-  { id: 'not-alone', name: 'You Are Not Alone', emoji: '🤍', theme: 'lavender' },
+  { id: 'not-alone', name: 'Not Alone', emoji: '🤍', theme: 'lavender' },
   { id: 'humor', name: 'A Little Humor', emoji: '😄', theme: 'blush' },
 ];
 
