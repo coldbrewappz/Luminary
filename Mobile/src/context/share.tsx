@@ -26,9 +26,18 @@ const ShareContext = createContext<ShareValue | null>(null);
 export function ShareProvider({ children }: { children: ReactNode }) {
   const shotRef = useRef<View>(null);
   const [pending, setPending] = useState<Quote | null>(null);
-  // Resolved by the hidden card's onLayout, so we snapshot only once it's drawn.
-  const laidOut = useRef<(() => void) | null>(null);
   const busy = useRef(false);
+  // We snapshot only once the card is BOTH laid out AND its logo image has loaded,
+  // otherwise the capture can catch the logo before it's painted (blank-logo bug).
+  const laid = useRef(false);
+  const logoLoaded = useRef(false);
+  const readyResolve = useRef<(() => void) | null>(null);
+  const markReady = () => {
+    if (laid.current && logoLoaded.current) {
+      readyResolve.current?.();
+      readyResolve.current = null;
+    }
+  };
 
   const shareQuote = useCallback(async (quote: Quote) => {
     if (busy.current) return;
@@ -38,11 +47,14 @@ export function ShareProvider({ children }: { children: ReactNode }) {
     const text = `“${quote.text}”\n— ${author}`;
 
     try {
-      const laid = new Promise<void>((resolve) => (laidOut.current = resolve));
+      laid.current = false;
+      logoLoaded.current = false;
+      const ready = new Promise<void>((resolve) => (readyResolve.current = resolve));
       setPending(quote);
-      // Wait for layout (with a safety timeout), then a frame for the image/font.
-      await Promise.race([laid, new Promise((r) => setTimeout(r, 600))]);
-      await new Promise((r) => setTimeout(r, 120));
+      // Wait until it's laid out AND the logo image has loaded (with a safety
+      // timeout), then one more frame so the paint is committed before we snapshot.
+      await Promise.race([ready, new Promise((r) => setTimeout(r, 1500))]);
+      await new Promise((r) => setTimeout(r, 90));
 
       // Loaded lazily so a build without the native module doesn't crash on import.
       const { captureRef } = require('react-native-view-shot');
@@ -63,7 +75,7 @@ export function ShareProvider({ children }: { children: ReactNode }) {
       }
     } finally {
       setPending(null);
-      laidOut.current = null;
+      readyResolve.current = null;
       busy.current = false;
     }
   }, []);
@@ -73,8 +85,21 @@ export function ShareProvider({ children }: { children: ReactNode }) {
       {children}
       {pending ? (
         <View style={styles.offscreen} pointerEvents="none">
-          <View ref={shotRef} collapsable={false} onLayout={() => laidOut.current?.()}>
-            <ShareCard text={pending.text} author={pending.author?.trim() || 'Luminary Mom'} />
+          <View
+            ref={shotRef}
+            collapsable={false}
+            onLayout={() => {
+              laid.current = true;
+              markReady();
+            }}>
+            <ShareCard
+              text={pending.text}
+              author={pending.author?.trim() || 'Luminary Mom'}
+              onLogoLoad={() => {
+                logoLoaded.current = true;
+                markReady();
+              }}
+            />
           </View>
         </View>
       ) : null}

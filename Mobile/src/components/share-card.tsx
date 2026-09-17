@@ -13,10 +13,20 @@ const LOGO = require('../../assets/images/icon.png');
  * centered on the app's linen ground. Fixed square so every share looks the same;
  * long quotes shrink to fit rather than overflowing.
  */
-export function ShareCard({ text, author }: { text: string; author: string }) {
+export function ShareCard({
+  text,
+  author,
+  onLogoLoad,
+}: {
+  text: string;
+  author: string;
+  /** Fires when the logo image is loaded — the share flow waits for this before
+   *  snapshotting, so the logo is actually painted into the PNG (not blank). */
+  onLogoLoad?: () => void;
+}) {
   return (
     <View style={styles.card}>
-      <Image source={LOGO} style={styles.logo} />
+      <Image source={LOGO} style={styles.logo} fadeDuration={0} onLoad={onLogoLoad} />
       <Text
         style={styles.quote}
         adjustsFontSizeToFit
