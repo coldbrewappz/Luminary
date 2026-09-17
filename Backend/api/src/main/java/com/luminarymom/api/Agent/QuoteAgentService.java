@@ -52,8 +52,8 @@ public class QuoteAgentService {
             QuoteRepository quoteRepository,
             QuoteGenerator quoteGenerator,
             @Value("${quote.agent.anchor-month:2026-08}") String anchorMonth,
-            @Value("${quote.agent.batch-size:50}") int batchSize,
-            @Value("${quote.agent.max-in-house:20}") int maxInHouse) {
+            @Value("${quote.agent.batch-size:6}") int batchSize,
+            @Value("${quote.agent.max-in-house:3}") int maxInHouse) {
         this.quoteRepository = quoteRepository;
         this.quoteGenerator = quoteGenerator;
         this.anchor = YearMonth.parse(anchorMonth);
@@ -174,10 +174,10 @@ public class QuoteAgentService {
 
                 Generate exactly %d short quotes for the "%s" category.
 
-                Mix requirements:
-                - At most %d may be ORIGINAL quotes you write yourself. Attribute those to \
+                Mix requirements (aim for a roughly even split):
+                - Exactly %d must be ORIGINAL quotes you write yourself. Attribute those to \
                 "Luminary Mom" and set "type" to "in-house".
-                - The remaining quotes must be REAL, pre-existing quotes. The MAJORITY should be \
+                - The remaining quotes must be REAL, pre-existing quotes. Most of these should be \
                 from KNOWN authors (set "type" to "known"); the rest may be traditional or \
                 anonymous sayings (set "type" to "unknown", author "Unknown").
                 - Favor widely-documented, verifiable quotes. Do NOT attribute quotes to living \
