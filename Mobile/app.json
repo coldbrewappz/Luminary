@@ -2,6 +2,7 @@
   "expo": {
     "name": "Luminary Mom",
     "slug": "luminary-mom",
+    "owner": "coldbrewapps",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -41,6 +42,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ee693235-dd17-422e-89bc-0e1020553110"
+      }
     }
   }
 }
