@@ -11,7 +11,11 @@
     "backgroundColor": "#F0EAE0",
     "ios": {
       "bundleIdentifier": "com.coldbrewapps.luminarymom",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryAddUsageDescription": "Luminary Mom saves the quote images you choose to your Photos."
+      }
     },
     "android": {
       "adaptiveIcon": {
