@@ -1,8 +1,21 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen } from '@/components/screen';
+import { ScrollTopButton } from '@/components/scroll-top-button';
 import { QUOTE_CAP } from '@/config/api';
 import { Colors, HitSlop, Radius, Spacing, TabBarClearance, Type } from '@/constants/theme';
 import { useAuth } from '@/context/auth';
@@ -24,6 +37,15 @@ export default function LovesScreen() {
   const { user, loading: authLoading } = useAuth();
   const { lovedQuotes, personalQuotes, loading, error, total, removeSaved, removePersonal, reload } =
     useLoves();
+
+  const [showTop, setShowTop] = useState(false);
+  const listRef = useRef<ScrollView>(null);
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setShowTop(e.nativeEvent.contentOffset.y > 400);
+  }, []);
+  const scrollToTop = useCallback(() => {
+    listRef.current?.scrollTo({ y: 0, animated: true });
+  }, []);
 
   // Merge saved quotes and personal quotes into one list.
   const collection: CollectionItem[] = [
@@ -90,6 +112,7 @@ export default function LovesScreen() {
   return (
     <Screen
       title="Quotes You Love"
+      scroll={false}
       action={
         <Pressable
           onPress={() => router.push('/write')}
@@ -100,11 +123,17 @@ export default function LovesScreen() {
           <Text style={styles.writeButtonText}>+ Write</Text>
         </Pressable>
       }
-      contentStyle={{ paddingBottom: insets.bottom + TabBarClearance }}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={reload} tintColor={Colors.textLight} />
-      }>
-      <View style={styles.body}>
+      contentStyle={styles.noPad}>
+      <ScrollView
+        ref={listRef}
+        style={styles.fill}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + TabBarClearance }]}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={reload} tintColor={Colors.textLight} />
+        }>
         {/* Cap meter */}
         <View style={[styles.capBar, atCapFull && styles.capBarFull]}>
           <Text style={[styles.capText, atCapFull && styles.capTextFull]}>
@@ -154,12 +183,19 @@ export default function LovesScreen() {
             </View>
           ))
         )}
-      </View>
+      </ScrollView>
+      <ScrollTopButton
+        visible={showTop}
+        onPress={scrollToTop}
+        bottomOffset={insets.bottom + TabBarClearance}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  noPad: { paddingBottom: 0 },
   body: { padding: Spacing.gutter, paddingTop: Spacing.lg, gap: Spacing.md },
   centerBlock: { paddingTop: Spacing.xxl, alignItems: 'center' },
   emptyState: {
