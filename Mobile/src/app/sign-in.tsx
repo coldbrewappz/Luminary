@@ -26,6 +26,7 @@ export default function SignInSheet() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -39,6 +40,10 @@ export default function SignInSheet() {
     const trimmed = email.trim();
     if (!trimmed || !password) {
       setError('Enter your email and password to continue.');
+      return;
+    }
+    if (isRegister && password !== confirm) {
+      setError('Those passwords don’t match.');
       return;
     }
     setBusy(true);
@@ -108,6 +113,22 @@ export default function SignInSheet() {
               <Text style={styles.eyeText}>{showPassword ? 'HIDE' : 'SHOW'}</Text>
             </Pressable>
           </View>
+
+          {isRegister ? (
+            <TextInput
+              value={confirm}
+              onChangeText={setConfirm}
+              placeholder="Confirm password"
+              placeholderTextColor={Colors.textLight}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              autoComplete="new-password"
+              textContentType="newPassword"
+              onSubmitEditing={submit}
+              returnKeyType="go"
+              style={styles.field}
+            />
+          ) : null}
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
