@@ -89,6 +89,11 @@ export default function SignInSheet() {
         {/* The form sits in a colour-coded frame — lavender for sign in, sage for
             create account — a second, always-visible cue for which mode you're in. */}
         <View style={[styles.fields, isRegister ? styles.frameCreate : styles.frameSignIn]}>
+          <View style={[styles.modeChip, isRegister ? styles.modeChipCreate : styles.modeChipSignIn]}>
+            <Text style={[styles.modeChipText, isRegister ? styles.modeChipTextCreate : styles.modeChipTextSignIn]}>
+              {isRegister ? 'CREATING ACCOUNT' : 'SIGNING IN'}
+            </Text>
+          </View>
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -191,6 +196,14 @@ const styles = StyleSheet.create({
   },
   frameSignIn: { borderColor: Colors.lavenderDeep, backgroundColor: 'rgba(221, 213, 240, 0.35)' },
   frameCreate: { borderColor: Colors.sageDeep, backgroundColor: 'rgba(217, 231, 210, 0.45)' },
+  // An always-visible, color-coded chip naming the current mode — so switching
+  // between sign in and create account is unmistakable, not just a subtle shift.
+  modeChip: { alignSelf: 'flex-start', borderRadius: 99, paddingHorizontal: 11, paddingVertical: 4, marginBottom: Spacing.xs },
+  modeChipSignIn: { backgroundColor: 'rgba(221, 213, 240, 0.9)' },
+  modeChipCreate: { backgroundColor: 'rgba(217, 231, 210, 0.95)' },
+  modeChipText: { ...Type.label, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
+  modeChipTextSignIn: { color: Colors.lavenderDeep },
+  modeChipTextCreate: { color: Colors.sageDeep },
   field: {
     backgroundColor: Colors.white,
     borderWidth: StyleSheet.hairlineWidth,
