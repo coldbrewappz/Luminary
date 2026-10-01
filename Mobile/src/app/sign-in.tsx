@@ -25,6 +25,7 @@ export default function SignInSheet() {
   const [mode, setMode] = useState<'signIn' | 'register'>('signIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -83,20 +84,30 @@ export default function SignInSheet() {
             textContentType="emailAddress"
             style={styles.field}
           />
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            placeholderTextColor={Colors.textLight}
-            secureTextEntry
-            autoCapitalize="none"
-            /* newPassword lets iOS Keychain offer to generate and save one. */
-            autoComplete={isRegister ? 'new-password' : 'current-password'}
-            textContentType={isRegister ? 'newPassword' : 'password'}
-            onSubmitEditing={submit}
-            returnKeyType="go"
-            style={styles.field}
-          />
+          <View style={styles.fieldRow}>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor={Colors.textLight}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              /* newPassword lets iOS Keychain offer to generate and save one. */
+              autoComplete={isRegister ? 'new-password' : 'current-password'}
+              textContentType={isRegister ? 'newPassword' : 'password'}
+              onSubmitEditing={submit}
+              returnKeyType="go"
+              style={styles.fieldFlex}
+            />
+            <Pressable
+              onPress={() => setShowPassword((s) => !s)}
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              hitSlop={10}
+              style={styles.eyeBtn}>
+              <Text style={styles.eyeText}>{showPassword ? 'HIDE' : 'SHOW'}</Text>
+            </Pressable>
+          </View>
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -159,6 +170,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.textDark,
   },
+  // Password box: a field-styled row holding the input plus a show/hide toggle.
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.linenDark,
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.md,
+    height: 50,
+  },
+  fieldFlex: {
+    flex: 1,
+    fontFamily: Type.quote.fontFamily,
+    fontStyle: 'italic',
+    fontSize: 16,
+    color: Colors.textDark,
+  },
+  eyeBtn: { paddingLeft: Spacing.sm, paddingVertical: 8 },
+  eyeText: { ...Type.label, fontSize: 10.5, color: Colors.textMid, fontWeight: '600', letterSpacing: 1 },
   error: { ...Type.body, color: Colors.danger, fontSize: 13 },
   button: {
     backgroundColor: Colors.heart,
