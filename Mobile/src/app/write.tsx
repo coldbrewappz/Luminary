@@ -77,9 +77,11 @@ export default function WriteSheet() {
       </View>
 
       {atCap ? (
-        <Text style={styles.capNote}>
-          Your collection is full. Remove a quote to make room for something new.
-        </Text>
+        <View style={styles.capBanner}>
+          <Text style={styles.capBannerText}>
+            Your collection is full (20 of 20). Remove a quote to make room for a new one.
+          </Text>
+        </View>
       ) : null}
     </ScrollView>
   );
@@ -124,5 +126,12 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.55 },
   buttonText: { ...Type.label, fontSize: 11, color: Colors.textDark, fontWeight: '600', letterSpacing: 1.5 },
   count: { ...Type.body, fontSize: 12, color: Colors.textLight },
-  capNote: { ...Type.body, fontSize: 13, color: Colors.textMid, fontStyle: 'italic', marginTop: Spacing.sm },
+  capBanner: {
+    marginTop: Spacing.md,
+    backgroundColor: Colors.blush,
+    borderRadius: Radius.card,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  capBannerText: { ...Type.body, fontSize: 14, color: Colors.textDark, fontWeight: '500' },
 });
