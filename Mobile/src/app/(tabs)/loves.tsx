@@ -85,6 +85,7 @@ export default function LovesScreen() {
   }
 
   const pct = Math.min(100, (total / QUOTE_CAP) * 100);
+  const atCapFull = total >= QUOTE_CAP;
 
   return (
     <Screen
@@ -105,15 +106,15 @@ export default function LovesScreen() {
       }>
       <View style={styles.body}>
         {/* Cap meter */}
-        <View style={styles.capBar}>
-          <Text style={styles.capText}>
-            {total} of {QUOTE_CAP} saved
+        <View style={[styles.capBar, atCapFull && styles.capBarFull]}>
+          <Text style={[styles.capText, atCapFull && styles.capTextFull]}>
+            {atCapFull ? `Collection full · ${QUOTE_CAP} of ${QUOTE_CAP}` : `${total} of ${QUOTE_CAP} saved`}
           </Text>
           <View style={styles.track}>
             <View
               style={[
                 styles.trackFill,
-                { width: `${pct}%`, backgroundColor: total >= 18 ? Colors.blushDeep : Colors.heart },
+                { width: `${pct}%`, backgroundColor: atCapFull ? Colors.blushDeep : Colors.heart },
               ]}
             />
           </View>
@@ -187,8 +188,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: 12,
   },
-  capText: { ...Type.body, fontSize: 12, color: Colors.textMid },
-  track: { width: 120, height: 4, borderRadius: 999, backgroundColor: Colors.linenDark, overflow: 'hidden' },
+  capBarFull: { backgroundColor: Colors.blush },
+  capText: { ...Type.body, fontSize: 13, color: Colors.textMid },
+  capTextFull: { color: Colors.blushDeep, fontWeight: '600' },
+  track: { width: 130, height: 7, borderRadius: 999, backgroundColor: Colors.linenDark, overflow: 'hidden' },
   trackFill: { height: '100%', borderRadius: 999 },
 
   error: { ...Type.body, fontSize: 13, color: Colors.danger, fontStyle: 'italic' },
