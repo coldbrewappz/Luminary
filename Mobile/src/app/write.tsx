@@ -36,6 +36,10 @@ export default function WriteSheet() {
       style={styles.fill}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
+      /* Insets the scroll content when the keyboard opens so the Add button
+         stays reachable above the keys on long quotes (the "big bug"). */
+      automaticallyAdjustKeyboardInsets
       showsVerticalScrollIndicator={false}>
       <Label>Write your own words</Label>
       <Text style={[Type.title, styles.heading]}>Something that lifts you up.</Text>
@@ -93,6 +97,9 @@ const styles = StyleSheet.create({
     borderRadius: Radius.card,
     padding: Spacing.md,
     minHeight: 110,
+    // Cap the growth so a long quote scrolls inside the field instead of
+    // pushing the Add button down behind the keyboard.
+    maxHeight: 180,
     fontFamily: Type.quote.fontFamily,
     fontStyle: 'italic',
     fontSize: 16,
