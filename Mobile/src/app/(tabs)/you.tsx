@@ -64,7 +64,7 @@ export default function YouScreen() {
     );
   }
 
-  const savedLabel = `${total} ${total === 1 ? 'light' : 'lights'} saved`;
+  const savedLabel = `${total} saved`;
 
   async function onShare() {
     try {
