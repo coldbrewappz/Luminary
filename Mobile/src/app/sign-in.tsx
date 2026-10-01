@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Keyboard,
   Pressable,
   ScrollView,
@@ -49,8 +50,19 @@ export default function SignInSheet() {
     setBusy(true);
     setError(null);
     try {
-      await (isRegister ? register(trimmed, password) : login(trimmed, password));
-      router.back();
+      if (isRegister) {
+        await register(trimmed, password);
+        // A clear "it worked" beat — signup used to close so fast you couldn't
+        // tell you'd made an account.
+        Alert.alert(
+          'You’re all set, mama 💛',
+          'Your account is ready — the quotes you love save from here on.',
+          [{ text: 'Continue', onPress: () => router.back() }]
+        );
+      } else {
+        await login(trimmed, password);
+        router.back();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
