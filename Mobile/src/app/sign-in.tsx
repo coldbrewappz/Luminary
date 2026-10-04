@@ -57,7 +57,7 @@ export default function SignInSheet() {
         // tell you'd made an account.
         Alert.alert(
           'You’re all set, mama 💛',
-          'Your account is ready — the quotes you love save from here on.',
+          'Your account is ready!',
           [{ text: 'Continue', onPress: () => router.back() }]
         );
       } else {
