@@ -143,7 +143,7 @@ export default function LovesScreen() {
             <View
               style={[
                 styles.trackFill,
-                { width: `${pct}%`, backgroundColor: atCapFull ? Colors.blushDeep : Colors.heart },
+                { width: `${pct}%`, backgroundColor: atCapFull ? Colors.danger : Colors.heart },
               ]}
             />
           </View>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   capBarFull: { backgroundColor: Colors.blush },
   capText: { ...Type.body, fontSize: 13, color: Colors.textMid },
-  capTextFull: { color: Colors.blushDeep, fontWeight: '600' },
+  capTextFull: { color: Colors.danger, fontWeight: '600' },
   track: { width: 130, height: 7, borderRadius: 999, backgroundColor: Colors.linenDark, overflow: 'hidden' },
   trackFill: { height: '100%', borderRadius: 999 },
 
