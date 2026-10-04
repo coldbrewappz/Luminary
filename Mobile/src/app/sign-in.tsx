@@ -28,6 +28,7 @@ export default function SignInSheet() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [confirm, setConfirm] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -132,19 +133,29 @@ export default function SignInSheet() {
           </View>
 
           {isRegister ? (
-            <TextInput
-              value={confirm}
-              onChangeText={setConfirm}
-              placeholder="Confirm password"
-              placeholderTextColor={Colors.textLight}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoComplete="new-password"
-              textContentType="newPassword"
-              onSubmitEditing={submit}
-              returnKeyType="go"
-              style={styles.field}
-            />
+            <View style={styles.fieldRow}>
+              <TextInput
+                value={confirm}
+                onChangeText={setConfirm}
+                placeholder="Confirm password"
+                placeholderTextColor={Colors.textLight}
+                secureTextEntry={!showConfirm}
+                autoCapitalize="none"
+                autoComplete="new-password"
+                textContentType="newPassword"
+                onSubmitEditing={submit}
+                returnKeyType="go"
+                style={styles.fieldFlex}
+              />
+              <Pressable
+                onPress={() => setShowConfirm((s) => !s)}
+                accessibilityRole="button"
+                accessibilityLabel={showConfirm ? 'Hide password' : 'Show password'}
+                hitSlop={10}
+                style={styles.eyeBtn}>
+                <Text style={styles.eyeText}>{showConfirm ? 'HIDE' : 'SHOW'}</Text>
+              </Pressable>
+            </View>
           ) : null}
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
